@@ -1,0 +1,32 @@
+{
+    "$schema": "https://getcomposer.org/schema.json",
+    "name": "patrickzuurbier/velor-cms-site-information",
+    "version": "1.0.0",
+    "description": "Site Information resource plugin for Velor CMS.",
+    "type": "library",
+    "license": "MIT",
+    "require": {
+        "php": "^8.2",
+        "velor/cms": "^1.4"
+    },
+    "autoload": {
+        "psr-4": {
+            "Velor\\SiteInformation\\": "src/",
+            "Velor\\SiteInformation\\Database\\Seeders\\": "database/seeders/"
+        }
+    },
+    "autoload-dev": {
+        "psr-4": {
+            "Velor\\SiteInformation\\Tests\\": "tests/"
+        }
+    },
+    "extra": {
+        "laravel": {
+            "providers": [
+                "Velor\\SiteInformation\\Providers\\SiteInformationServiceProvider"
+            ]
+        }
+    },
+    "minimum-stability": "stable",
+    "prefer-stable": true
+}

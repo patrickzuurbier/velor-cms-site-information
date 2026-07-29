@@ -1,0 +1,100 @@
+<?php
+
+declare(strict_types=1);
+
+namespace Velor\SiteInformation\Http\Requests;
+
+use App\Contracts\Factories\Validation\ResourceValidationAttributesFactoryInterface;
+use App\Contracts\Factories\Validation\ResourceValidationRulesFactoryInterface;
+use App\Http\Requests\AbstractFormRequest;
+use Illuminate\Contracts\Validation\ValidationRule;
+use Illuminate\Support\Str;
+use Illuminate\Validation\Rule;
+use Illuminate\Validation\Validator;
+use Velor\SiteInformation\Models\SiteInformationSubject;
+
+class SiteInformationSubjectRequest extends AbstractFormRequest
+{
+    public function __construct(
+        protected ResourceValidationRulesFactoryInterface $rulesFactory,
+        protected ResourceValidationAttributesFactoryInterface $attributesFactory,
+    ) {
+        parent::__construct();
+    }
+
+    public function authorize(): bool
+    {
+        return true;
+    }
+
+    /**
+     * @return array<string, ValidationRule|array<mixed>|string>
+     */
+    public function rules(): array
+    {
+        $rules = $this->rulesFactory->make(SiteInformationSubject::class);
+        $rules['key'] = [
+            'required',
+            'string',
+            'max:255',
+            Rule::unique('site_information_subjects', 'key')->ignore($this->currentSubject()),
+        ];
+        $rules['parent_id'] = [
+            'nullable',
+            'uuid',
+            Rule::exists('site_information_subjects', 'id')->whereNull('parent_id'),
+            Rule::notIn([$this->currentSubject()?->getKey()]),
+        ];
+
+        return $rules;
+    }
+
+    protected function prepareForValidation(): void
+    {
+        if ($this->currentSubject() instanceof SiteInformationSubject) {
+            $this->merge([
+                'key' => $this->currentSubject()->getAttribute('key'),
+            ]);
+
+            return;
+        }
+
+        $this->merge([
+            'key' => Str::snake($this->string('name')->toString()),
+        ]);
+    }
+
+    /**
+     * @return array<string, string>
+     */
+    public function attributes(): array
+    {
+        return $this->attributesFactory->make(SiteInformationSubject::class);
+    }
+
+    /**
+     * @return array<string, ValidationRule|array<mixed>|string>
+     */
+    public function getRules(): array
+    {
+        return $this->rules();
+    }
+
+    public function withValidator(Validator $validator): void
+    {
+        $validator->after(function (Validator $validator): void {
+            $subject = $this->currentSubject();
+
+            if ($this->filled('parent_id') && $subject instanceof SiteInformationSubject && $subject->children()->exists()) {
+                $validator->errors()->add('parent_id', __('velor-site-information::validation.site_information_parent_has_children'));
+            }
+        });
+    }
+
+    protected function currentSubject(): ?SiteInformationSubject
+    {
+        $subject = $this->route('site_information_subject');
+
+        return $subject instanceof SiteInformationSubject ? $subject : null;
+    }
+}
