@@ -3,6 +3,8 @@
 Site Information is a first-party Velor CMS resource package for managing
 website-facing company/contact information in configurable subjects and fields.
 
+This package requires Velor CMS `^1.8`.
+
 ## Installation
 
 Require the package:
@@ -38,6 +40,7 @@ php artisan vendor:publish --tag=velor-site-information-views
 
 ## Local Development
 
-In the Velor CMS monorepo this package is developed from
-`packages/velor/site-information` through a Composer path repository. In a
-separate project it should be installed from its VCS repository.
+For local path development, keep the package repository outside the Velor CMS
+core repository. Temporarily point Composer to the package workspace from the
+host application. In a separate project it should be installed from its VCS
+repository.

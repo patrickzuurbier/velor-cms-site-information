@@ -6,13 +6,17 @@ This package follows semantic versioning: `MAJOR.MINOR.PATCH`.
 
 ## [Unreleased]
 
+### Changed
+
+- Updated the package to use Velor CMS `^1.8` CMS menu registration contracts.
+
 ## [1.0.0] - 2026-07-23
 
 ### Added
 
 - Extracted the Site Information CMS resource slice into a first-party package.
 - Added package-owned models, factories, migrations, seeders, controllers,
-  requests, resources, policies, translations, sidebar registration, CMS
+  requests, resources, policies, translations, CMS menu registration, CMS
   routes, views, scoped ordering, and SVG storage services.
 
 [Unreleased]: https://github.com/patrickzuurbier/velor-cms-site-information/compare/1.0.0...HEAD

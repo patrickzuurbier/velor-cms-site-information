@@ -4,9 +4,9 @@ declare(strict_types=1);
 
 namespace Velor\SiteInformation\Providers;
 
-use App\Data\Cms\SidebarItemData;
 use App\Services\Authorization\Contracts\PolicyRegistryInterface;
-use App\Services\CmsNavigation\Contracts\SidebarItemRegistryInterface;
+use App\Services\CmsMenu\Contracts\CmsMenuItemRegistryInterface;
+use App\Services\CmsMenu\Data\CmsMenuItemData;
 use App\Services\CmsRouting\Contracts\CmsRouteRegistrarInterface;
 use App\Services\Resources\Contracts\ResourceRegistryInterface;
 use Illuminate\Contracts\Config\Repository as ConfigRepository;
@@ -29,7 +29,7 @@ class SiteInformationServiceProvider extends ServiceProvider
         CmsRouteRegistrarInterface $cmsRoutes,
         ResourceRegistryInterface $resources,
         PolicyRegistryInterface $policies,
-        SidebarItemRegistryInterface $sidebarItems,
+        CmsMenuItemRegistryInterface $cmsMenuItems,
         ConfigRepository $config,
     ): void {
         $this->loadTranslationsFrom(__DIR__ . '/../../lang', 'velor-site-information');
@@ -49,9 +49,9 @@ class SiteInformationServiceProvider extends ServiceProvider
                 $this->configuredClass($config, 'velor-site-information.policies.' . SiteInformation::class, SiteInformationPolicy::class),
             );
 
-            $sidebarItems->registerBefore(
+            $cmsMenuItems->registerBefore(
                 'users.index',
-                new SidebarItemData(SiteInformationSubject::class, 'site-information.show', 'velor-site-information::resources.site-information-subjects.plural', 'bi-info-circle'),
+                new CmsMenuItemData(SiteInformationSubject::class, 'site-information.show', 'velor-site-information::resources.site-information-subjects.plural', 'bi-info-circle'),
             );
 
             $cmsRoutes->loadAuthenticated(__DIR__ . '/../../routes/cms.php');
