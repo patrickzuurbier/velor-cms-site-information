@@ -52,5 +52,5 @@
         </table>
     </div>
 
-    <x-modal.delete />
+    <x-cms.modal.delete />
 @endsection

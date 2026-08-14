@@ -6,6 +6,10 @@ This package follows semantic versioning: `MAJOR.MINOR.PATCH`.
 
 ## [Unreleased]
 
+### Fixed
+
+- Updated the manage view delete modal component reference for Velor CMS 1.8.
+
 ## [1.1.0] - 2026-08-13
 
 ### Changed
