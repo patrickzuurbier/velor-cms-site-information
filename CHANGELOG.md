@@ -6,6 +6,13 @@ This package follows semantic versioning: `MAJOR.MINOR.PATCH`.
 
 ## [Unreleased]
 
+## [1.1.2] - 2026-08-14
+
+### Fixed
+
+- Prevented default Site Information migration and seeder records from creating
+  activity log entries.
+
 ## [1.1.1] - 2026-08-14
 
 ### Added
@@ -36,7 +43,8 @@ This package follows semantic versioning: `MAJOR.MINOR.PATCH`.
   requests, resources, policies, translations, CMS menu registration, CMS
   routes, views, scoped ordering, and SVG storage services.
 
-[Unreleased]: https://github.com/patrickzuurbier/velor-cms-site-information/compare/1.1.1...HEAD
+[Unreleased]: https://github.com/patrickzuurbier/velor-cms-site-information/compare/1.1.2...HEAD
+[1.1.2]: https://github.com/patrickzuurbier/velor-cms-site-information/compare/1.1.1...1.1.2
 [1.1.1]: https://github.com/patrickzuurbier/velor-cms-site-information/compare/1.1.0...1.1.1
 [1.1.0]: https://github.com/patrickzuurbier/velor-cms-site-information/compare/1.0.0...1.1.0
 [1.0.0]: https://github.com/patrickzuurbier/velor-cms-site-information/releases/tag/1.0.0
