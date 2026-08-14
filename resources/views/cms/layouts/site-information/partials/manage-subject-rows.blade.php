@@ -1,7 +1,5 @@
 @php
     /** @var \Velor\SiteInformation\Models\SiteInformationSubject $subject */
-    use App\Data\View\ButtonData;
-    use App\Enums\ButtonTypeEnum;
 @endphp
 
 <tr
@@ -16,37 +14,9 @@
         @if ($depth > 0)
             <span class="ms-4"></span>
         @endif
-        {{ $subject->getAttribute('name') }}
-    </th>
-    <th class="text-end">
-        @can('create', \Velor\SiteInformation\Models\SiteInformation::class)
-            <a
-                class="btn btn-secondary"
-                href="{{ route('site-information-subjects.site-information.create', ['site_information_subject' => $subject->getKey()]) }}"
-                role="button"
-            >
-                <i class="bi bi-plus-lg"></i>
-            </a>
-        @endcan
-
-        @can('update', $subject)
-            <x-cms.layout.button :buttonData="new ButtonData(
-                ButtonTypeEnum::EDIT,
-                route('site-information-subjects.edit', ['site_information_subject' => $subject->getKey()]),
-                null,
-                null,
-            )" />
-        @endcan
-
-        @can('delete', $subject)
-            <x-cms.layout.button :buttonData="new ButtonData(
-                ButtonTypeEnum::DELETE,
-                route('site-information-subjects.destroy', ['site_information_subject' => $subject->getKey()]),
-                __('velor-site-information::resources.site-information-subjects.singular'),
-                $subject->getAttribute('name'),
-                __('velor-site-information::cms.manage.delete_subject_warning', ['subject' => $subject->getAttribute('name')]),
-            )" />
-        @endcan
+        <a href="{{ route('site-information-subjects.show', ['site_information_subject' => $subject->getKey()]) }}">
+            {{ $subject->getAttribute('name') }}
+        </a>
     </th>
 </tr>
 
@@ -62,35 +32,14 @@
             @if ($depth > 0)
                 <span class="ms-4"></span>
             @endif
-            {{ $field->getAttribute('label') }}
+            <a href="{{ route('site-information-subjects.site-information.show', [
+                'site_information_subject' => $subject->getKey(),
+                'site_information' => $field->getKey(),
+            ]) }}">
+                {{ $field->getAttribute('label') }}
+            </a>
         </td>
         <td>{{ $field->getAttribute('type')?->value }}</td>
-        <td class="text-end">
-            @can('update', $field)
-                <x-cms.layout.button :buttonData="new ButtonData(
-                    ButtonTypeEnum::EDIT,
-                    route('site-information-subjects.site-information.edit', [
-                        'site_information_subject' => $subject->getKey(),
-                        'site_information' => $field->getKey(),
-                    ]),
-                    null,
-                    null,
-                )" />
-            @endcan
-
-            @can('delete', $field)
-                <x-cms.layout.button :buttonData="new ButtonData(
-                    ButtonTypeEnum::DELETE,
-                    route('site-information-subjects.site-information.destroy', [
-                        'site_information_subject' => $subject->getKey(),
-                        'site_information' => $field->getKey(),
-                    ]),
-                    __('velor-site-information::resources.site-information.singular'),
-                    $field->getAttribute('label'),
-                    __('velor-site-information::cms.manage.delete_field_warning', ['field' => $field->getAttribute('label')]),
-                )" />
-            @endcan
-        </td>
     </tr>
 @endforeach
 

@@ -4,6 +4,8 @@ declare(strict_types=1);
 
 namespace Velor\SiteInformation\Http\Controllers;
 
+use App\Data\View\TabData;
+use App\Data\View\TabsData;
 use App\Http\Controllers\Controller;
 use Velor\SiteInformation\Http\Requests\SiteInformationRequest;
 use Velor\SiteInformation\Models\SiteInformation;
@@ -29,7 +31,7 @@ class SiteInformationController extends Controller
         $this->authorize('view', $siteInformationSubject);
         $this->authorize('viewAny', SiteInformation::class);
 
-        return view('cms.layouts.index', [
+        return view('velor-site-information::cms.layouts.site-information.fields-index', [
             'pagination' => $this->resourceIndexQuery->paginate(
                 model: SiteInformation::class,
                 parent: $siteInformationSubject,
@@ -39,6 +41,8 @@ class SiteInformationController extends Controller
             'model' => new SiteInformation([
                 'site_information_subject_id' => $siteInformationSubject->getKey(),
             ]),
+            'subject' => $siteInformationSubject,
+            'tabs'    => $this->subjectTabs($siteInformationSubject, 'fields'),
         ]);
     }
 
@@ -65,8 +69,7 @@ class SiteInformationController extends Controller
         $siteInformation = $siteInformationSubject->siteInformation()->create($request->validated());
         $this->svgStorage->persist($siteInformation, $this->value($siteInformation));
 
-        return redirect()
-            ->route('site-information.manage')
+        return $this->redirectAfterSave($siteInformation)
             ->with('status', $this->translator->get('velor-site-information::cms.fields.created'));
     }
 
@@ -109,8 +112,7 @@ class SiteInformationController extends Controller
 
         $this->svgStorage->persist($siteInformation, $this->value($siteInformation));
 
-        return redirect()
-            ->route('site-information.manage')
+        return $this->redirectAfterSave($siteInformation)
             ->with('status', $this->translator->get('velor-site-information::cms.fields.updated'));
     }
 
@@ -136,11 +138,34 @@ class SiteInformationController extends Controller
         return is_string($value) ? $value : null;
     }
 
+    protected function redirectAfterSave(SiteInformation $siteInformation): RedirectResponse
+    {
+        return redirect()->route('site-information-subjects.site-information.index', [
+            'site_information_subject' => $siteInformation->getAttribute('site_information_subject_id'),
+        ]);
+    }
+
     protected function nextSortOrder(SiteInformationSubject $siteInformationSubject): int
     {
         $sortOrder = $siteInformationSubject->siteInformation()
             ->max('sort_order');
 
         return is_numeric($sortOrder) ? ((int) $sortOrder) + 1 : 1;
+    }
+
+    protected function subjectTabs(SiteInformationSubject $siteInformationSubject, string $activeTab): TabsData
+    {
+        return new TabsData([
+            new TabData(
+                route('site-information-subjects.children.index', ['site_information_subject' => $siteInformationSubject->getKey()]),
+                $activeTab === 'children',
+                __('velor-site-information::resources.site-information-subjects.tabs.children'),
+            ),
+            new TabData(
+                route('site-information-subjects.site-information.index', ['site_information_subject' => $siteInformationSubject->getKey()]),
+                $activeTab === 'fields',
+                __('velor-site-information::resources.site-information-subjects.tabs.fields'),
+            ),
+        ]);
     }
 }

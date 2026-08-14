@@ -13,6 +13,8 @@
                         class="btn btn-primary"
                         href="{{ route('site-information-subjects.create') }}"
                         role="button"
+                        title="{{ __('cms.button_titles.new', ['resource' => __('velor-site-information::resources.site-information-subjects.singular')]) }}"
+                        aria-label="{{ __('cms.button_titles.new', ['resource' => __('velor-site-information::resources.site-information-subjects.singular')]) }}"
                     >
                         <i class="bi bi-plus-lg"></i>
                     </a>
@@ -22,6 +24,8 @@
                     class="btn btn-secondary"
                     href="{{ route('site-information.show') }}"
                     role="button"
+                    title="{{ __('cms.button_titles.view', ['resource' => __('velor-site-information::resources.site-information-subjects.plural')]) }}"
+                    aria-label="{{ __('cms.button_titles.view', ['resource' => __('velor-site-information::resources.site-information-subjects.plural')]) }}"
                 >
                     <i class="bi bi-arrow-left"></i>
                 </a>
@@ -38,7 +42,6 @@
                 <tr>
                     <th scope="col">@lang('velor-site-information::resources.site-information.fields.label')</th>
                     <th scope="col">@lang('velor-site-information::resources.site-information.fields.type')</th>
-                    <th scope="col" class="text-end">@lang('velor-site-information::cms.manage.actions')</th>
                 </tr>
             </thead>
             <tbody>

@@ -53,14 +53,16 @@ class SiteInformationSubjectRequest extends AbstractFormRequest
     {
         if ($this->currentSubject() instanceof SiteInformationSubject) {
             $this->merge([
-                'key' => $this->currentSubject()->getAttribute('key'),
+                'key'        => $this->currentSubject()->getAttribute('key'),
+                'sort_order' => $this->sortOrder(),
             ]);
 
             return;
         }
 
         $this->merge([
-            'key' => Str::snake($this->string('name')->toString()),
+            'key'        => Str::snake($this->string('name')->toString()),
+            'sort_order' => $this->sortOrder(),
         ]);
     }
 
@@ -96,5 +98,42 @@ class SiteInformationSubjectRequest extends AbstractFormRequest
         $subject = $this->route('site_information_subject');
 
         return $subject instanceof SiteInformationSubject ? $subject : null;
+    }
+
+    protected function sortOrder(): int|string
+    {
+        if ($this->filled('sort_order')) {
+            return $this->string('sort_order')->toString();
+        }
+
+        $subject = $this->currentSubject();
+
+        if ($subject instanceof SiteInformationSubject) {
+            return (int) $subject->getAttribute('sort_order');
+        }
+
+        $query = SiteInformationSubject::query();
+        $parentId = $this->parentId();
+
+        if ($parentId === null) {
+            $query->whereNull('parent_id');
+        } else {
+            $query->where('parent_id', $parentId);
+        }
+
+        $sortOrder = $query->max('sort_order');
+
+        return is_numeric($sortOrder) ? ((int) $sortOrder) + 1 : 1;
+    }
+
+    protected function parentId(): ?string
+    {
+        if (! $this->filled('parent_id')) {
+            return null;
+        }
+
+        $parentId = $this->string('parent_id')->toString();
+
+        return $parentId !== '' ? $parentId : null;
     }
 }

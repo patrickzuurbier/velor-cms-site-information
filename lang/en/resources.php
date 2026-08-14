@@ -14,7 +14,8 @@ return [
             'parent'    => 'Parent',
         ],
         'tabs' => [
-            'fields' => 'Fields',
+            'children' => 'Child subjects',
+            'fields'   => 'Fields',
         ],
     ],
     'site-information' => [

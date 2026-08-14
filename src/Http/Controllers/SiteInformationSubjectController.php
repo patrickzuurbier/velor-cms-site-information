@@ -4,6 +4,12 @@ declare(strict_types=1);
 
 namespace Velor\SiteInformation\Http\Controllers;
 
+use App\Contracts\Factories\View\ShowFactoryInterface;
+use App\Data\View\ButtonData;
+use App\Data\View\ModalData;
+use App\Data\View\TabData;
+use App\Data\View\TabsData;
+use App\Enums\ButtonTypeEnum;
 use App\Http\Controllers\Controller;
 use Velor\SiteInformation\Http\Requests\SiteInformationSubjectRequest;
 use Velor\SiteInformation\Models\SiteInformationSubject;
@@ -20,6 +26,7 @@ class SiteInformationSubjectController extends Controller
         protected ResourceIndexQueryInterface $resourceIndexQuery,
         protected SiteInformationSvgStorage $svgStorage,
         protected Translator $translator,
+        protected ShowFactoryInterface $showFactory,
     ) {
     }
 
@@ -36,12 +43,34 @@ class SiteInformationSubjectController extends Controller
         ]);
     }
 
-    public function create(): View
+    public function children(Request $request, SiteInformationSubject $siteInformationSubject): View
+    {
+        $this->authorize('view', $siteInformationSubject);
+        $this->authorize('viewAny', SiteInformationSubject::class);
+
+        return view('velor-site-information::cms.layouts.site-information.subject-children-index', [
+            'pagination' => $this->resourceIndexQuery->paginate(
+                model: SiteInformationSubject::class,
+                parent: $siteInformationSubject,
+                relationship: 'children',
+                search: $request->string('search')->toString(),
+            ),
+            'subject' => $siteInformationSubject,
+            'tabs'    => $this->subjectTabs($siteInformationSubject, 'children'),
+        ]);
+    }
+
+    public function create(Request $request): View
     {
         $this->authorize('create', SiteInformationSubject::class);
 
+        $parentId = $this->parentId($request);
+
         return view('cms.layouts.form', [
-            'model' => new SiteInformationSubject(),
+            'model' => new SiteInformationSubject([
+                'parent_id'  => $parentId,
+                'sort_order' => $this->nextSortOrder($parentId),
+            ]),
         ]);
     }
 
@@ -49,10 +78,9 @@ class SiteInformationSubjectController extends Controller
     {
         $this->authorize('create', SiteInformationSubject::class);
 
-        SiteInformationSubject::query()->create($request->validated());
+        $siteInformationSubject = SiteInformationSubject::query()->create($request->validated());
 
-        return redirect()
-            ->route('site-information.manage')
+        return $this->redirectAfterSave($siteInformationSubject)
             ->with('status', $this->translator->get('velor-site-information::cms.subjects.created'));
     }
 
@@ -60,8 +88,10 @@ class SiteInformationSubjectController extends Controller
     {
         $this->authorize('view', $siteInformationSubject);
 
-        return view('cms.layouts.show', [
-            'model' => $siteInformationSubject,
+        return view('velor-site-information::cms.layouts.site-information.subject-show', [
+            'model'        => $siteInformationSubject,
+            'show'         => $this->showFactory->make($siteInformationSubject),
+            'deleteButton' => $this->deleteButton($siteInformationSubject),
         ]);
     }
 
@@ -82,8 +112,7 @@ class SiteInformationSubjectController extends Controller
 
         $siteInformationSubject->update($request->validated());
 
-        return redirect()
-            ->route('site-information.manage')
+        return $this->redirectAfterSave($siteInformationSubject)
             ->with('status', $this->translator->get('velor-site-information::cms.subjects.updated'));
     }
 
@@ -115,5 +144,80 @@ class SiteInformationSubjectController extends Controller
                 $this->svgStorage->delete($siteInformation);
             }
         }
+    }
+
+    protected function redirectAfterSave(SiteInformationSubject $siteInformationSubject): RedirectResponse
+    {
+        $parentId = $siteInformationSubject->getAttribute('parent_id');
+
+        if (is_string($parentId) && $parentId !== '') {
+            return redirect()->route('site-information-subjects.children.index', [
+                'site_information_subject' => $parentId,
+            ]);
+        }
+
+        return redirect()->route('site-information.manage');
+    }
+
+    protected function parentId(Request $request): ?string
+    {
+        if (! $request->filled('parent_id')) {
+            return null;
+        }
+
+        $parentId = $request->string('parent_id')->toString();
+
+        return $parentId !== '' ? $parentId : null;
+    }
+
+    protected function nextSortOrder(?string $parentId): int
+    {
+        $query = SiteInformationSubject::query();
+
+        if ($parentId === null) {
+            $query->whereNull('parent_id');
+        } else {
+            $query->where('parent_id', $parentId);
+        }
+
+        $sortOrder = $query->max('sort_order');
+
+        return is_numeric($sortOrder) ? ((int) $sortOrder) + 1 : 1;
+    }
+
+    protected function deleteButton(SiteInformationSubject $siteInformationSubject): ButtonData
+    {
+        $name = (string) $siteInformationSubject->getAttribute('name');
+
+        return new ButtonData(
+            ButtonTypeEnum::DELETE,
+            route('site-information-subjects.destroy', ['site_information_subject' => $siteInformationSubject->getKey()]),
+            __('velor-site-information::resources.site-information-subjects.singular'),
+            $name,
+            __('cms.button_titles.delete', ['resource' => __('velor-site-information::resources.site-information-subjects.singular')]),
+            new ModalData(
+                'delete',
+                __('cms.delete_modal.title', ['resource' => $name]),
+                __('velor-site-information::cms.manage.delete_subject_warning', ['subject' => $name]),
+                __('cms.actions.close'),
+                __('cms.actions.delete'),
+            ),
+        );
+    }
+
+    protected function subjectTabs(SiteInformationSubject $siteInformationSubject, string $activeTab): TabsData
+    {
+        return new TabsData([
+            new TabData(
+                route('site-information-subjects.children.index', ['site_information_subject' => $siteInformationSubject->getKey()]),
+                $activeTab === 'children',
+                __('velor-site-information::resources.site-information-subjects.tabs.children'),
+            ),
+            new TabData(
+                route('site-information-subjects.site-information.index', ['site_information_subject' => $siteInformationSubject->getKey()]),
+                $activeTab === 'fields',
+                __('velor-site-information::resources.site-information-subjects.tabs.fields'),
+            ),
+        ]);
     }
 }

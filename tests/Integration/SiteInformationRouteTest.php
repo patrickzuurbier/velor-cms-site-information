@@ -4,17 +4,16 @@ declare(strict_types=1);
 
 namespace Velor\SiteInformation\Tests\Integration;
 
+use Illuminate\Support\Facades\Storage;
 use Velor\SiteInformation\Enums\SiteInformationFieldTypeEnum;
 use Velor\SiteInformation\Models\SiteInformation;
 use Velor\SiteInformation\Models\SiteInformationSubject;
 use Tests\Concerns\UsesAuthorization;
-use Tests\Concerns\UsesStorage;
 use Tests\Integration\AbstractDatabaseIntegrationTestCase;
 
 class SiteInformationRouteTest extends AbstractDatabaseIntegrationTestCase
 {
     use UsesAuthorization;
-    use UsesStorage;
 
     public function test_site_information_values_can_be_viewed_with_collapsed_subject_panels(): void
     {
@@ -102,8 +101,8 @@ class SiteInformationRouteTest extends AbstractDatabaseIntegrationTestCase
 
     public function test_svg_site_information_values_are_persisted_to_s3_storage(): void
     {
-        $this->fakeS3Disk();
-        $this->filesystem()->disk('s3')->deleteDirectory('svgs');
+        Storage::fake('s3');
+        Storage::disk('s3')->deleteDirectory('svgs');
         $this->actingAsAdmin();
         $subject = SiteInformationSubject::factory()->create([
             'name' => 'Company',
@@ -130,8 +129,8 @@ class SiteInformationRouteTest extends AbstractDatabaseIntegrationTestCase
         $field->refresh();
 
         $this->assertSame($svg, $field->getAttribute('value'));
-        $this->assertTrue($this->filesystem()->disk('s3')->exists('svgs/company-logo.svg'));
-        $this->assertSame($svg . PHP_EOL, $this->filesystem()->disk('s3')->get('svgs/company-logo.svg'));
+        $this->assertTrue(Storage::disk('s3')->exists('svgs/company-logo.svg'));
+        $this->assertSame($svg . PHP_EOL, Storage::disk('s3')->get('svgs/company-logo.svg'));
     }
 
     public function test_site_information_structure_can_be_managed_from_subject_panels(): void
@@ -161,12 +160,13 @@ class SiteInformationRouteTest extends AbstractDatabaseIntegrationTestCase
             ->assertSee('Company')
             ->assertSee('Location 1')
             ->assertSee('Email')
-            ->assertSee(route('site-information-subjects.edit', ['site_information_subject' => $subject->getKey()]), false)
-            ->assertSee(route('site-information-subjects.site-information.edit', [
+            ->assertSee(route('site-information-subjects.show', ['site_information_subject' => $subject->getKey()]), false)
+            ->assertSee(route('site-information-subjects.site-information.show', [
                 'site_information_subject' => $child->getKey(),
                 'site_information'         => $field->getKey(),
             ]), false)
-            ->assertSee('All child subjects, fields, entered values, and generated SVG files', false);
+            ->assertDontSee(route('site-information-subjects.edit', ['site_information_subject' => $subject->getKey()]), false)
+            ->assertDontSee('All child subjects, fields, entered values, and generated SVG files', false);
     }
 
     public function test_site_information_values_are_validated_by_field_type(): void
@@ -214,9 +214,143 @@ class SiteInformationRouteTest extends AbstractDatabaseIntegrationTestCase
         ]))
             ->assertOk()
             ->assertSee('Company')
+            ->assertSee('data-title="Delete Company"', false)
+            ->assertSee(route('site-information-subjects.children.index', [
+                'site_information_subject' => $subject->getKey(),
+            ]), false)
+            ->assertSee(route('site-information-subjects.site-information.index', [
+                'site_information_subject' => $subject->getKey(),
+            ]), false)
+            ->assertDontSee(route('site-information-subjects.create', ['parent_id' => $subject->getKey()]), false)
+            ->assertDontSee(route('site-information-subjects.site-information.create', [
+                'site_information_subject' => $subject->getKey(),
+            ]), false);
+    }
+
+    public function test_child_subjects_are_managed_from_a_scoped_index(): void
+    {
+        $this->actingAsAdmin();
+        $subject = SiteInformationSubject::factory()->create([
+            'name' => 'Company',
+            'key'  => 'company',
+        ]);
+        $child = SiteInformationSubject::factory()->create([
+            'parent_id' => $subject->getKey(),
+            'name'      => 'Location 1',
+        ]);
+        SiteInformationSubject::factory()->create([
+            'parent_id' => null,
+            'name'      => 'Social media',
+        ]);
+
+        $this->get(route('site-information-subjects.children.index', [
+            'site_information_subject' => $subject->getKey(),
+        ]))
+            ->assertOk()
+            ->assertSee('Child subjects for Company')
+            ->assertSee('Location 1')
+            ->assertDontSee('Social media')
+            ->assertSee(route('site-information-subjects.create', ['parent_id' => $subject->getKey()]), false)
+            ->assertSee(route('site-information-subjects.show', ['site_information_subject' => $child->getKey()]), false)
             ->assertSee(route('site-information-subjects.site-information.index', [
                 'site_information_subject' => $subject->getKey(),
             ]), false);
+    }
+
+    public function test_fields_are_managed_from_a_scoped_index(): void
+    {
+        $this->actingAsAdmin();
+        $subject = SiteInformationSubject::factory()->create([
+            'name' => 'Company',
+            'key'  => 'company',
+        ]);
+        $field = SiteInformation::factory()->create([
+            'site_information_subject_id' => $subject->getKey(),
+            'label'                       => 'Company logo',
+        ]);
+
+        $this->get(route('site-information-subjects.site-information.index', [
+            'site_information_subject' => $subject->getKey(),
+        ]))
+            ->assertOk()
+            ->assertSee('Company logo')
+            ->assertSee(route('site-information-subjects.site-information.create', [
+                'site_information_subject' => $subject->getKey(),
+            ]), false)
+            ->assertSee(route('site-information-subjects.children.index', [
+                'site_information_subject' => $subject->getKey(),
+            ]), false)
+            ->assertSee(route('site-information-subjects.site-information.show', [
+                'site_information_subject' => $subject->getKey(),
+                'site_information'         => $field->getKey(),
+            ]), false)
+            ->assertDontSee(route('site-information.manage'), false);
+    }
+
+    public function test_subject_create_form_prefills_parent_and_next_sort_order_from_query(): void
+    {
+        $this->actingAsAdmin();
+        $parent = SiteInformationSubject::factory()->create([
+            'parent_id' => null,
+        ]);
+        SiteInformationSubject::factory()->create([
+            'parent_id'  => $parent->getKey(),
+            'sort_order' => 4,
+        ]);
+
+        $this->get(route('site-information-subjects.create', ['parent_id' => $parent->getKey()]))
+            ->assertOk()
+            ->assertSee((string) $parent->getKey(), false)
+            ->assertSee('value="5"', false);
+    }
+
+    public function test_root_subject_create_uses_the_next_sort_order_when_it_is_left_empty(): void
+    {
+        $this->actingAsAdmin();
+        SiteInformationSubject::factory()->create([
+            'parent_id'  => null,
+            'sort_order' => 3,
+        ]);
+
+        $response = $this->post(route('site-information-subjects.store'), [
+            'parent_id'    => null,
+            'name'         => 'Bank',
+            'is_collapsed' => '0',
+            'sort_order'   => null,
+        ]);
+
+        $subject = SiteInformationSubject::query()->where('key', 'bank')->first();
+
+        $this->assertInstanceOf(SiteInformationSubject::class, $subject);
+        $this->assertSame(4, $subject->getAttribute('sort_order'));
+        $response->assertRedirect(route('site-information.manage'));
+    }
+
+    public function test_child_subject_create_uses_the_next_sort_order_inside_its_parent_when_it_is_left_empty(): void
+    {
+        $this->actingAsAdmin();
+        $parent = SiteInformationSubject::factory()->create([
+            'parent_id' => null,
+        ]);
+        SiteInformationSubject::factory()->create([
+            'parent_id'  => $parent->getKey(),
+            'sort_order' => 2,
+        ]);
+
+        $response = $this->post(route('site-information-subjects.store'), [
+            'parent_id'    => $parent->getKey(),
+            'name'         => 'Location 2',
+            'is_collapsed' => '1',
+            'sort_order'   => null,
+        ]);
+
+        $subject = SiteInformationSubject::query()->where('key', 'location_2')->first();
+
+        $this->assertInstanceOf(SiteInformationSubject::class, $subject);
+        $this->assertSame(3, $subject->getAttribute('sort_order'));
+        $response->assertRedirect(route('site-information-subjects.children.index', [
+            'site_information_subject' => $parent->getKey(),
+        ]));
     }
 
     public function test_subjects_cannot_be_moved_below_themselves(): void
@@ -264,10 +398,35 @@ class SiteInformationRouteTest extends AbstractDatabaseIntegrationTestCase
         $response->assertSessionHasErrors('parent_id');
     }
 
+    public function test_child_subject_updates_redirect_back_to_the_parent_children_index(): void
+    {
+        $this->actingAsAdmin();
+        $parent = SiteInformationSubject::factory()->create([
+            'parent_id' => null,
+        ]);
+        $child = SiteInformationSubject::factory()->create([
+            'parent_id'  => $parent->getKey(),
+            'sort_order' => 1,
+        ]);
+
+        $response = $this->patch(route('site-information-subjects.update', [
+            'site_information_subject' => $child->getKey(),
+        ]), [
+            'parent_id'    => $parent->getKey(),
+            'name'         => 'Location',
+            'is_collapsed' => '0',
+            'sort_order'   => '1',
+        ]);
+
+        $response->assertRedirect(route('site-information-subjects.children.index', [
+            'site_information_subject' => $parent->getKey(),
+        ]));
+    }
+
     public function test_deleting_a_subject_removes_svg_files_for_its_fields_and_child_fields(): void
     {
-        $this->fakeS3Disk();
-        $this->filesystem()->disk('s3')->deleteDirectory('svgs');
+        Storage::fake('s3');
+        Storage::disk('s3')->deleteDirectory('svgs');
         $this->actingAsAdmin();
         $subject = SiteInformationSubject::factory()->create([
             'parent_id' => null,
@@ -289,16 +448,16 @@ class SiteInformationRouteTest extends AbstractDatabaseIntegrationTestCase
             'type'                        => SiteInformationFieldTypeEnum::SVG,
             'value'                       => '<svg viewBox="0 0 10 10"></svg>',
         ]);
-        $this->filesystem()->disk('s3')->put('svgs/company-logo.svg', '<svg></svg>');
-        $this->filesystem()->disk('s3')->put('svgs/location-logo.svg', '<svg></svg>');
+        Storage::disk('s3')->put('svgs/company-logo.svg', '<svg></svg>');
+        Storage::disk('s3')->put('svgs/location-logo.svg', '<svg></svg>');
 
         $response = $this->delete(route('site-information-subjects.destroy', [
             'site_information_subject' => $subject->getKey(),
         ]));
 
         $response->assertRedirect(route('site-information.manage'));
-        $this->assertFalse($this->filesystem()->disk('s3')->exists('svgs/company-logo.svg'));
-        $this->assertFalse($this->filesystem()->disk('s3')->exists('svgs/location-logo.svg'));
+        $this->assertFalse(Storage::disk('s3')->exists('svgs/company-logo.svg'));
+        $this->assertFalse(Storage::disk('s3')->exists('svgs/location-logo.svg'));
     }
 
     public function test_fields_can_be_created_for_a_subject(): void
@@ -322,7 +481,9 @@ class SiteInformationRouteTest extends AbstractDatabaseIntegrationTestCase
 
         $this->assertInstanceOf(SiteInformation::class, $field);
         $this->assertSame($subject->getKey(), $field->getAttribute('site_information_subject_id'));
-        $response->assertRedirect(route('site-information.manage'));
+        $response->assertRedirect(route('site-information-subjects.site-information.index', [
+            'site_information_subject' => $subject->getKey(),
+        ]));
     }
 
     public function test_field_create_form_prefills_the_next_sort_order(): void
@@ -366,7 +527,9 @@ class SiteInformationRouteTest extends AbstractDatabaseIntegrationTestCase
 
         $this->assertInstanceOf(SiteInformation::class, $field);
         $this->assertSame(4, $field->getAttribute('sort_order'));
-        $response->assertRedirect(route('site-information.manage'));
+        $response->assertRedirect(route('site-information-subjects.site-information.index', [
+            'site_information_subject' => $subject->getKey(),
+        ]));
     }
 
     public function test_fields_created_for_child_subjects_get_a_nested_dot_key(): void
@@ -394,13 +557,15 @@ class SiteInformationRouteTest extends AbstractDatabaseIntegrationTestCase
         $field = SiteInformation::query()->where('key', 'company.location_1.street')->first();
 
         $this->assertInstanceOf(SiteInformation::class, $field);
-        $response->assertRedirect(route('site-information.manage'));
+        $response->assertRedirect(route('site-information-subjects.site-information.index', [
+            'site_information_subject' => $child->getKey(),
+        ]));
     }
 
     public function test_svg_fields_are_persisted_to_s3_storage_when_managed_as_fields(): void
     {
-        $this->fakeS3Disk();
-        $this->filesystem()->disk('s3')->deleteDirectory('svgs');
+        Storage::fake('s3');
+        Storage::disk('s3')->deleteDirectory('svgs');
         $this->actingAsAdmin();
         $subject = SiteInformationSubject::factory()->create([
             'name' => 'Company',
@@ -420,15 +585,17 @@ class SiteInformationRouteTest extends AbstractDatabaseIntegrationTestCase
         $field = SiteInformation::query()->where('key', 'company.company_logo')->first();
 
         $this->assertInstanceOf(SiteInformation::class, $field);
-        $response->assertRedirect(route('site-information.manage'));
-        $this->assertTrue($this->filesystem()->disk('s3')->exists('svgs/company-logo.svg'));
-        $this->assertSame($svg . PHP_EOL, $this->filesystem()->disk('s3')->get('svgs/company-logo.svg'));
+        $response->assertRedirect(route('site-information-subjects.site-information.index', [
+            'site_information_subject' => $subject->getKey(),
+        ]));
+        $this->assertTrue(Storage::disk('s3')->exists('svgs/company-logo.svg'));
+        $this->assertSame($svg . PHP_EOL, Storage::disk('s3')->get('svgs/company-logo.svg'));
     }
 
     public function test_svg_field_updates_keep_the_stable_generated_key_and_filename(): void
     {
-        $this->fakeS3Disk();
-        $this->filesystem()->disk('s3')->deleteDirectory('svgs');
+        Storage::fake('s3');
+        Storage::disk('s3')->deleteDirectory('svgs');
         $this->actingAsAdmin();
         $subject = SiteInformationSubject::factory()->create();
         $field = SiteInformation::factory()->create([
@@ -438,7 +605,7 @@ class SiteInformationRouteTest extends AbstractDatabaseIntegrationTestCase
             'type'                        => SiteInformationFieldTypeEnum::SVG,
             'value'                       => '<svg viewBox="0 0 10 10"></svg>',
         ]);
-        $this->filesystem()->disk('s3')->put('svgs/company-logo.svg', '<svg></svg>');
+        Storage::disk('s3')->put('svgs/company-logo.svg', '<svg></svg>');
 
         $response = $this->patch(route('site-information-subjects.site-information.update', [
             'site_information_subject' => $subject->getKey(),
@@ -451,12 +618,14 @@ class SiteInformationRouteTest extends AbstractDatabaseIntegrationTestCase
             'sort_order'                  => '10',
         ]);
 
-        $response->assertRedirect(route('site-information.manage'));
-        $this->assertTrue($this->filesystem()->disk('s3')->exists('svgs/company-logo.svg'));
-        $this->assertFalse($this->filesystem()->disk('s3')->exists('svgs/header-logo.svg'));
+        $response->assertRedirect(route('site-information-subjects.site-information.index', [
+            'site_information_subject' => $subject->getKey(),
+        ]));
+        $this->assertTrue(Storage::disk('s3')->exists('svgs/company-logo.svg'));
+        $this->assertFalse(Storage::disk('s3')->exists('svgs/header-logo.svg'));
         $this->assertSame(
             '<svg viewBox="0 0 20 20"></svg>' . PHP_EOL,
-            $this->filesystem()->disk('s3')->get('svgs/company-logo.svg'),
+            Storage::disk('s3')->get('svgs/company-logo.svg'),
         );
 
         $field->refresh();
@@ -466,8 +635,8 @@ class SiteInformationRouteTest extends AbstractDatabaseIntegrationTestCase
 
     public function test_svg_field_deletion_removes_the_s3_file(): void
     {
-        $this->fakeS3Disk();
-        $this->filesystem()->disk('s3')->deleteDirectory('svgs');
+        Storage::fake('s3');
+        Storage::disk('s3')->deleteDirectory('svgs');
         $this->actingAsAdmin();
         $subject = SiteInformationSubject::factory()->create();
         $field = SiteInformation::factory()->create([
@@ -477,7 +646,7 @@ class SiteInformationRouteTest extends AbstractDatabaseIntegrationTestCase
             'type'                        => SiteInformationFieldTypeEnum::SVG,
             'value'                       => '<svg viewBox="0 0 10 10"></svg>',
         ]);
-        $this->filesystem()->disk('s3')->put('svgs/company-logo.svg', '<svg></svg>');
+        Storage::disk('s3')->put('svgs/company-logo.svg', '<svg></svg>');
 
         $response = $this->delete(route('site-information-subjects.site-information.destroy', [
             'site_information_subject' => $subject->getKey(),
@@ -485,7 +654,7 @@ class SiteInformationRouteTest extends AbstractDatabaseIntegrationTestCase
         ]));
 
         $response->assertRedirect(route('site-information.manage'));
-        $this->assertFalse($this->filesystem()->disk('s3')->exists('svgs/company-logo.svg'));
+        $this->assertFalse(Storage::disk('s3')->exists('svgs/company-logo.svg'));
     }
 
     public function test_fields_can_be_moved_to_another_subject(): void
@@ -516,7 +685,9 @@ class SiteInformationRouteTest extends AbstractDatabaseIntegrationTestCase
 
         $this->assertSame($target->getKey(), $field->getAttribute('site_information_subject_id'));
         $this->assertSame('phone', $field->getAttribute('key'));
-        $response->assertRedirect(route('site-information.manage'));
+        $response->assertRedirect(route('site-information-subjects.site-information.index', [
+            'site_information_subject' => $target->getKey(),
+        ]));
     }
 
     public function test_root_subjects_can_be_reordered(): void

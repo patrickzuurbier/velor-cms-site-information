@@ -14,7 +14,8 @@ return [
             'parent'    => 'Bovenliggend onderwerp',
         ],
         'tabs' => [
-            'fields' => 'Velden',
+            'children' => 'Onderwerpen',
+            'fields'   => 'Velden',
         ],
     ],
     'site-information' => [

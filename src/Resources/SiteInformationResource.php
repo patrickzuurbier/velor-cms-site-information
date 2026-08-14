@@ -90,6 +90,7 @@ class SiteInformationResource extends AbstractResource
             Textarea::make('value')
                 ->label(__('velor-site-information::resources.site-information.fields.value'))
                 ->hideFromIndex()
+                ->hideFromForms()
                 ->rules([
                     'nullable',
                     'string',
@@ -111,12 +112,24 @@ class SiteInformationResource extends AbstractResource
     public function tabs(): array
     {
         return [
+            ResourceTab::make(__('velor-site-information::resources.site-information-subjects.tabs.children'))
+                ->url(fn (SiteInformation $siteInformation): string => $this->urlGenerator->route(
+                    'site-information-subjects.children.index',
+                    ['site_information_subject' => $siteInformation->getAttribute('site_information_subject_id')]
+                ))
+                ->onlyOnIndex(),
+            ResourceTab::make(__('velor-site-information::resources.site-information-subjects.tabs.fields'))
+                ->url(fn (SiteInformation $siteInformation): string => $this->urlGenerator->route(
+                    'site-information-subjects.site-information.index',
+                    ['site_information_subject' => $siteInformation->getAttribute('site_information_subject_id')]
+                ))
+                ->onlyOnIndex(),
             ResourceTab::make(__('velor-site-information::resources.site-information.tabs.subject'))
                 ->url(fn (SiteInformation $siteInformation): string => $this->urlGenerator->route(
                     'site-information-subjects.show',
                     ['site_information_subject' => $siteInformation->getAttribute('site_information_subject_id')]
                 ))
-                ->onlyOnIndex(),
+                ->onlyOnShow(),
         ];
     }
 

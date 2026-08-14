@@ -5,6 +5,8 @@ declare(strict_types=1);
 namespace Velor\SiteInformation\Resources;
 
 use App\Resources\AbstractResource;
+use App\Enums\ButtonTypeEnum;
+use App\Enums\ResourceViewEnum;
 use App\Resources\Fields\Checkbox;
 use App\Resources\Fields\Field;
 use App\Resources\Fields\Number;
@@ -101,6 +103,12 @@ class SiteInformationSubjectResource extends AbstractResource
     public function tabs(): array
     {
         return [
+            ResourceTab::make(__('velor-site-information::resources.site-information-subjects.tabs.children'))
+                ->url(fn (SiteInformationSubject $subject): string => $this->urlGenerator->route(
+                    'site-information-subjects.children.index',
+                    ['site_information_subject' => $subject->getRouteKey()]
+                ))
+                ->onlyOnShow(),
             ResourceTab::make(__('velor-site-information::resources.site-information-subjects.tabs.fields'))
                 ->url(fn (SiteInformationSubject $subject): string => $this->urlGenerator->route(
                     'site-information-subjects.site-information.index',
@@ -108,6 +116,21 @@ class SiteInformationSubjectResource extends AbstractResource
                 ))
                 ->onlyOnShow(),
         ];
+    }
+
+    /**
+     * @return array<int, ButtonTypeEnum>
+     */
+    public function buttonsFor(ResourceViewEnum $view): array
+    {
+        if ($view === ResourceViewEnum::SHOW) {
+            return [
+                ButtonTypeEnum::LIST,
+                ButtonTypeEnum::EDIT,
+            ];
+        }
+
+        return parent::buttonsFor($view);
     }
 
     /**

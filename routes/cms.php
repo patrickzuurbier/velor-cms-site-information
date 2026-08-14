@@ -18,7 +18,7 @@ $router->get('/site-information/edit', [SiteInformationValueController::class, '
 $router->match(['PUT', 'PATCH'], '/site-information', [SiteInformationValueController::class, 'update'])->name('site-information.update');
 $router->redirect('/site-information-subjects', '/cms/site-information/manage')
     ->name('site-information-subjects.index');
-$router->redirect('/site-information-subjects/{site_information_subject}/site-information', '/cms/site-information/manage')
-    ->name('site-information-subjects.site-information.index');
+$router->get('/site-information-subjects/{site_information_subject}/children', [SiteInformationSubjectController::class, 'children'])
+    ->name('site-information-subjects.children.index');
 $router->resource('site-information-subjects', SiteInformationSubjectController::class)->except('index');
-$router->resource('site-information-subjects.site-information', SiteInformationController::class)->except('index');
+$router->resource('site-information-subjects.site-information', SiteInformationController::class);

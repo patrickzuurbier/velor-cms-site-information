@@ -6,6 +6,18 @@ This package follows semantic versioning: `MAJOR.MINOR.PATCH`.
 
 ## [Unreleased]
 
+### Changed
+
+- Improved the Site Information manage flow with scoped child subject and field
+  indexes, parent back links, and context-aware redirects after saving.
+- Moved subject deletion into the subject show action row with a clearer
+  subject-specific confirmation title.
+
+### Fixed
+
+- Filled missing subject sort order values inside their parent scope.
+- Removed raw HTML from Site Information delete confirmation messages.
+
 ## [1.1.4] - 2026-08-14
 
 ### Fixed
