@@ -31,7 +31,7 @@
 
     <div class="content overflow-auto">
         @foreach ($panels as $panelIndex => $panel)
-            @include('components.layout.show-panel', [
+            @include('components.cms.layout.show-panel', [
                 'panel' => $panel,
                 'panelIdPrefix' => 'site-information-panel-' . $panelIndex,
             ])

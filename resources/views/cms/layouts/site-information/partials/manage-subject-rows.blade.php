@@ -30,7 +30,7 @@
         @endcan
 
         @can('update', $subject)
-            <x-layout.button :buttonData="new ButtonData(
+            <x-cms.layout.button :buttonData="new ButtonData(
                 ButtonTypeEnum::EDIT,
                 route('site-information-subjects.edit', ['site_information_subject' => $subject->getKey()]),
                 null,
@@ -39,7 +39,7 @@
         @endcan
 
         @can('delete', $subject)
-            <x-layout.button :buttonData="new ButtonData(
+            <x-cms.layout.button :buttonData="new ButtonData(
                 ButtonTypeEnum::DELETE,
                 route('site-information-subjects.destroy', ['site_information_subject' => $subject->getKey()]),
                 __('velor-site-information::resources.site-information-subjects.singular'),
@@ -67,7 +67,7 @@
         <td>{{ $field->getAttribute('type')?->value }}</td>
         <td class="text-end">
             @can('update', $field)
-                <x-layout.button :buttonData="new ButtonData(
+                <x-cms.layout.button :buttonData="new ButtonData(
                     ButtonTypeEnum::EDIT,
                     route('site-information-subjects.site-information.edit', [
                         'site_information_subject' => $subject->getKey(),
@@ -79,7 +79,7 @@
             @endcan
 
             @can('delete', $field)
-                <x-layout.button :buttonData="new ButtonData(
+                <x-cms.layout.button :buttonData="new ButtonData(
                     ButtonTypeEnum::DELETE,
                     route('site-information-subjects.site-information.destroy', [
                         'site_information_subject' => $subject->getKey(),
