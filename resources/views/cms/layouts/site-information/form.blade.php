@@ -13,7 +13,7 @@
             @method('PUT')
 
             @foreach ($panels as $panelIndex => $panelData)
-                @include('components.form.panel', [
+                @include('components.cms.form.panel', [
                     'panelData' => $panelData,
                     'panelIdPrefix' => 'site-information-form-panel-' . $panelIndex,
                 ])
