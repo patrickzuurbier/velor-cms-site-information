@@ -12,10 +12,8 @@ use Tests\Integration\AbstractDatabaseIntegrationTestCase;
 
 class SiteInformationStructureTest extends AbstractDatabaseIntegrationTestCase
 {
-    public function test_it_seeds_default_site_information_subjects_and_fields(): void
+    public function test_it_creates_default_site_information_subjects_and_fields(): void
     {
-        $this->seed(SiteInformationTableSeeder::class);
-
         $this->assertDatabaseHas('site_information_subjects', [
             'key'          => 'company',
             'name'         => 'Company',
@@ -36,6 +34,19 @@ class SiteInformationStructureTest extends AbstractDatabaseIntegrationTestCase
             'label' => 'Phone',
             'type'  => SiteInformationFieldTypeEnum::TEXT->value,
         ]);
+    }
+
+    public function test_it_keeps_existing_site_information_values_when_seeded_again(): void
+    {
+        $field = SiteInformation::query()
+            ->where('key', 'company-name')
+            ->firstOrFail();
+
+        $field->update(['value' => 'Custom company']);
+
+        $this->seed(SiteInformationTableSeeder::class);
+
+        $this->assertSame('Custom company', $field->refresh()->getAttribute('value'));
     }
 
     public function test_subject_children_and_fields_are_ordered_by_sort_order(): void

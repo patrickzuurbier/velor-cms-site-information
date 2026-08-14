@@ -6,6 +6,15 @@ This package follows semantic versioning: `MAJOR.MINOR.PATCH`.
 
 ## [Unreleased]
 
+### Added
+
+- Added an idempotent migration-backed default Site Information structure.
+
+### Changed
+
+- Changed the Site Information seeder to preserve existing subjects, fields,
+  and values.
+
 ### Fixed
 
 - Updated the manage view delete modal component reference for Velor CMS 1.8.

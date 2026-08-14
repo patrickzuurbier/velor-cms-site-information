@@ -20,6 +20,8 @@ php artisan vendor:publish --tag=velor-site-information-migrations
 php artisan migrate
 ```
 
+The migrations create the default Site Information structure.
+
 Optionally publish seeders, translations, config, or views:
 
 ```bash
