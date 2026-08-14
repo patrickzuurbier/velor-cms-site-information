@@ -12,6 +12,22 @@ class SiteInformationDefaultStructureService
 {
     public function ensure(): void
     {
+        SiteInformationSubject::withoutEvents(
+            fn (): mixed => SiteInformation::withoutEvents(fn (): mixed => $this->create()),
+        );
+    }
+
+    public function remove(): void
+    {
+        SiteInformationSubject::withoutEvents(
+            fn (): mixed => SiteInformationSubject::query()
+                ->whereIn('key', ['company', 'contact', 'social-media'])
+                ->delete(),
+        );
+    }
+
+    protected function create(): void
+    {
         $company = $this->subject('company', 'Company', 10);
         $contact = $this->subject('contact', 'Contact Information', 20);
         $social = $this->subject('social-media', 'Social Media', 30);
@@ -30,13 +46,6 @@ class SiteInformationDefaultStructureService
         $this->field($social, 'instagram', 'Instagram', SiteInformationFieldTypeEnum::URL, null, 30);
         $this->field($social, 'pinterest', 'Pinterest', SiteInformationFieldTypeEnum::URL, null, 40);
         $this->field($social, 'youtube', 'YouTube', SiteInformationFieldTypeEnum::URL, null, 50);
-    }
-
-    public function remove(): void
-    {
-        SiteInformationSubject::query()
-            ->whereIn('key', ['company', 'contact', 'social-media'])
-            ->delete();
     }
 
     protected function location(SiteInformationSubject $parent, int $number, int $sortOrder): void
