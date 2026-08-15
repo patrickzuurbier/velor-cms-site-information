@@ -6,6 +6,8 @@ This package follows semantic versioning: `MAJOR.MINOR.PATCH`.
 
 ## [Unreleased]
 
+## [1.2.0] - 2026-08-15
+
 ### Changed
 
 - Improved the Site Information manage flow with scoped child subject and field
@@ -68,7 +70,8 @@ This package follows semantic versioning: `MAJOR.MINOR.PATCH`.
   requests, resources, policies, translations, CMS menu registration, CMS
   routes, views, scoped ordering, and SVG storage services.
 
-[Unreleased]: https://github.com/patrickzuurbier/velor-cms-site-information/compare/1.1.4...HEAD
+[Unreleased]: https://github.com/patrickzuurbier/velor-cms-site-information/compare/1.2.0...HEAD
+[1.2.0]: https://github.com/patrickzuurbier/velor-cms-site-information/compare/1.1.4...1.2.0
 [1.1.4]: https://github.com/patrickzuurbier/velor-cms-site-information/compare/1.1.3...1.1.4
 [1.1.3]: https://github.com/patrickzuurbier/velor-cms-site-information/compare/1.1.2...1.1.3
 [1.1.2]: https://github.com/patrickzuurbier/velor-cms-site-information/compare/1.1.1...1.1.2
