@@ -10,7 +10,7 @@ This package requires Velor CMS `^1.8`.
 Require the package:
 
 ```bash
-composer require patrickzuurbier/velor-cms-site-information:^1.1
+composer require patrickzuurbier/velor-cms-site-information:^1.2
 ```
 
 Publish and run the migrations when you want editable application copies:

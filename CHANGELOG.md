@@ -6,6 +6,8 @@ This package follows semantic versioning: `MAJOR.MINOR.PATCH`.
 
 ## [Unreleased]
 
+## [1.2.1] - 2026-08-21
+
 ### Changed
 
 - Changed Site Information subject and field order inputs to the dedicated
@@ -24,6 +26,8 @@ This package follows semantic versioning: `MAJOR.MINOR.PATCH`.
 - Removed random subject and field sort order values from factories so row
   ordering can fill compact positions.
 - Compacted Site Information drag ordering positions after reordering.
+- Fixed Site Information row order defaults and field subject moves.
+- Fixed panel factory relation types for PHPStan.
 
 ## [1.2.0] - 2026-08-15
 
@@ -89,7 +93,8 @@ This package follows semantic versioning: `MAJOR.MINOR.PATCH`.
   requests, resources, policies, translations, CMS menu registration, CMS
   routes, views, scoped ordering, and SVG storage services.
 
-[Unreleased]: https://github.com/patrickzuurbier/velor-cms-site-information/compare/1.2.0...HEAD
+[Unreleased]: https://github.com/patrickzuurbier/velor-cms-site-information/compare/1.2.1...HEAD
+[1.2.1]: https://github.com/patrickzuurbier/velor-cms-site-information/compare/1.2.0...1.2.1
 [1.2.0]: https://github.com/patrickzuurbier/velor-cms-site-information/compare/1.1.4...1.2.0
 [1.1.4]: https://github.com/patrickzuurbier/velor-cms-site-information/compare/1.1.3...1.1.4
 [1.1.3]: https://github.com/patrickzuurbier/velor-cms-site-information/compare/1.1.2...1.1.3
