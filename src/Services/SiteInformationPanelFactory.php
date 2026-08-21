@@ -10,7 +10,7 @@ use Velor\SiteInformation\Models\SiteInformation;
 use Velor\SiteInformation\Factories\SiteInformationAttributeDataFactory;
 use Velor\SiteInformation\Factories\SiteInformationInputDataFactory;
 use Velor\SiteInformation\Models\SiteInformationSubject;
-use Illuminate\Database\Eloquent\Relations\HasMany;
+use Illuminate\Database\Eloquent\Relations\Relation;
 use Illuminate\Http\Request;
 
 class SiteInformationPanelFactory
@@ -91,10 +91,10 @@ class SiteInformationPanelFactory
         return SiteInformationSubject::query()
             ->whereNull('parent_id')
             ->with([
-                'siteInformation'          => fn (HasMany $query): HasMany => $this->ordered($query),
-                'children'                 => fn (HasMany $query): HasMany => $this->ordered($query, 'name'),
-                'children.siteInformation' => fn (HasMany $query): HasMany => $this->ordered($query),
-                'children.children'        => fn (HasMany $query): HasMany => $this->ordered($query, 'name'),
+                'siteInformation'          => fn (Relation $query): Relation => $this->ordered($query),
+                'children'                 => fn (Relation $query): Relation => $this->ordered($query, 'name'),
+                'children.siteInformation' => fn (Relation $query): Relation => $this->ordered($query),
+                'children.children'        => fn (Relation $query): Relation => $this->ordered($query, 'name'),
             ])
             ->orderBy('sort_order')
             ->orderBy('name')
@@ -102,7 +102,15 @@ class SiteInformationPanelFactory
             ->all();
     }
 
-    protected function ordered(HasMany $query, string $secondaryColumn = 'label'): HasMany
+    /**
+     * @template TRelatedModel of \Illuminate\Database\Eloquent\Model
+     * @template TDeclaringModel of \Illuminate\Database\Eloquent\Model
+     * @template TResult
+     *
+     * @param Relation<TRelatedModel, TDeclaringModel, TResult> $query
+     * @return Relation<TRelatedModel, TDeclaringModel, TResult>
+     */
+    protected function ordered(Relation $query, string $secondaryColumn = 'label'): Relation
     {
         return $query
             ->orderBy('sort_order')
