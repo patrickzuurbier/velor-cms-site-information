@@ -6,7 +6,7 @@ namespace Velor\SiteInformation\Resources;
 
 use App\Resources\AbstractResource;
 use App\Resources\Fields\Field;
-use App\Resources\Fields\Number;
+use App\Resources\Fields\Order;
 use App\Resources\Fields\Select;
 use App\Resources\Fields\Textarea;
 use App\Resources\Fields\Text;
@@ -95,14 +95,8 @@ class SiteInformationResource extends AbstractResource
                     'nullable',
                     'string',
                 ]),
-            Number::make('sort_order')
-                ->label(__('velor-site-information::resources.site-information.fields.order'))
-                ->sortable()
-                ->rules([
-                    'nullable',
-                    'integer',
-                    'min:0',
-                ]),
+            Order::make('sort_order')
+                ->label(__('velor-site-information::resources.site-information.fields.order')),
         ];
     }
 

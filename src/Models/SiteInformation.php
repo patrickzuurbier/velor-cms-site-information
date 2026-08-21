@@ -4,7 +4,9 @@ declare(strict_types=1);
 
 namespace Velor\SiteInformation\Models;
 
+use App\Concerns\Models\HasRowOrdering;
 use App\Concerns\Models\UsesAudit;
+use App\Contracts\Models\RowOrderableInterface;
 use App\Models\AbstractModel;
 use Illuminate\Database\Eloquent\Concerns\HasUuids;
 use Illuminate\Database\Eloquent\Factories\Factory;
@@ -17,15 +19,23 @@ use Velor\SiteInformation\Enums\SiteInformationFieldTypeEnum;
 /**
  * @mixin \Eloquent
  */
-class SiteInformation extends AbstractModel
+class SiteInformation extends AbstractModel implements RowOrderableInterface
 {
     /** @use HasFactory<SiteInformationFactory> */
     use HasFactory;
+    use HasRowOrdering;
     use HasUuids;
     use Sortable;
     use UsesAudit;
 
     protected $table = 'site_information';
+
+    /**
+     * @var array<int, string>
+     */
+    protected array $rowOrderScopeColumns = [
+        'site_information_subject_id',
+    ];
 
     /**
      * @var array<int, string>

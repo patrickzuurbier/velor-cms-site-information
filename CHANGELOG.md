@@ -6,6 +6,25 @@ This package follows semantic versioning: `MAJOR.MINOR.PATCH`.
 
 ## [Unreleased]
 
+### Changed
+
+- Changed Site Information subject and field order inputs to the dedicated
+  Velor CMS Order field.
+- Removed the enabled option from config; package registration is now always
+  active when the package is installed.
+- Moved subject and field presentation ordering out of model relationships and
+  into package query/panel composition.
+- Split Site Information input and attribute DTO creation out of the panel
+  factory.
+- Moved default Site Information structure creation fully into the migration
+  and removed the package seeder and default structure service.
+
+### Fixed
+
+- Removed random subject and field sort order values from factories so row
+  ordering can fill compact positions.
+- Compacted Site Information drag ordering positions after reordering.
+
 ## [1.2.0] - 2026-08-15
 
 ### Changed

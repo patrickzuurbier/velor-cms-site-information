@@ -7,7 +7,7 @@ namespace Velor\SiteInformation\Tests\Integration;
 use Velor\SiteInformation\Enums\SiteInformationFieldTypeEnum;
 use Velor\SiteInformation\Models\SiteInformation;
 use Velor\SiteInformation\Models\SiteInformationSubject;
-use Velor\SiteInformation\Database\Seeders\SiteInformationTableSeeder;
+use Velor\SiteInformation\Services\SiteInformationPanelFactory;
 use Tests\Integration\AbstractDatabaseIntegrationTestCase;
 
 class SiteInformationStructureTest extends AbstractDatabaseIntegrationTestCase
@@ -36,55 +36,52 @@ class SiteInformationStructureTest extends AbstractDatabaseIntegrationTestCase
         ]);
     }
 
-    public function test_it_keeps_existing_site_information_values_when_seeded_again(): void
+    public function test_site_information_panels_are_ordered_by_sort_order(): void
     {
-        $field = SiteInformation::query()
-            ->where('key', 'company-name')
-            ->firstOrFail();
+        SiteInformationSubject::query()->delete();
 
-        $field->update(['value' => 'Custom company']);
-
-        $this->seed(SiteInformationTableSeeder::class);
-
-        $this->assertSame('Custom company', $field->refresh()->getAttribute('value'));
-    }
-
-    public function test_subject_children_and_fields_are_ordered_by_sort_order(): void
-    {
-        $subject = SiteInformationSubject::factory()->create();
-        $last = SiteInformationSubject::factory()->create([
+        $subject = SiteInformationSubject::factory()->create([
+            'name'       => 'Subject',
+            'key'        => 'subject',
+            'sort_order' => 1,
+        ]);
+        SiteInformationSubject::factory()->create([
             'parent_id'  => $subject->getKey(),
             'name'       => 'Last',
             'key'        => 'last',
-            'sort_order' => 20,
+            'sort_order' => 2,
         ]);
-        $first = SiteInformationSubject::factory()->create([
+        SiteInformationSubject::factory()->create([
             'parent_id'  => $subject->getKey(),
             'name'       => 'First',
             'key'        => 'first',
-            'sort_order' => 10,
+            'sort_order' => 1,
         ]);
 
         SiteInformation::factory()->create([
             'site_information_subject_id' => $subject->getKey(),
             'label'                       => 'Second field',
             'key'                         => 'second-field',
-            'sort_order'                  => 20,
+            'sort_order'                  => 2,
         ]);
         SiteInformation::factory()->create([
             'site_information_subject_id' => $subject->getKey(),
             'label'                       => 'First field',
             'key'                         => 'first-field',
-            'sort_order'                  => 10,
+            'sort_order'                  => 1,
         ]);
 
+        /** @var SiteInformationPanelFactory $panelFactory */
+        $panelFactory = $this->getApplication()->make(SiteInformationPanelFactory::class);
+        $panel = $panelFactory->showPanels()[0];
+
         $this->assertSame(
-            [$first->getKey(), $last->getKey()],
-            $subject->children()->pluck('id')->all(),
+            ['First field', 'Second field'],
+            array_map(static fn ($attribute): string => $attribute->getLabel(), $panel->getAttributes()),
         );
         $this->assertSame(
-            ['first-field', 'second-field'],
-            $subject->siteInformation()->pluck('key')->all(),
+            ['First', 'Last'],
+            array_map(static fn ($child): ?string => $child->getTitle(), $panel->getPanels()),
         );
     }
 

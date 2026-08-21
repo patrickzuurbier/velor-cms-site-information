@@ -20,14 +20,13 @@ class SiteInformationSubjectFactory extends Factory
      */
     public function definition(): array
     {
-        $name = fake()->unique()->word() . ' ' . fake()->unique()->word();
+        $name = $this->faker->unique()->word() . ' ' . $this->faker->unique()->word();
 
         return [
             'parent_id'    => null,
             'name'         => ucfirst($name),
             'key'          => Str::slug($name),
             'is_collapsed' => true,
-            'sort_order'   => fake()->numberBetween(1, 50),
         ];
     }
 }

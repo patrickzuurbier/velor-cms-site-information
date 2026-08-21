@@ -9,7 +9,7 @@ use App\Enums\ButtonTypeEnum;
 use App\Enums\ResourceViewEnum;
 use App\Resources\Fields\Checkbox;
 use App\Resources\Fields\Field;
-use App\Resources\Fields\Number;
+use App\Resources\Fields\Order;
 use App\Resources\Fields\Select;
 use App\Resources\Fields\Text;
 use App\Resources\Tabs\ResourceTab;
@@ -86,14 +86,8 @@ class SiteInformationSubjectResource extends AbstractResource
                 ->rules([
                     'boolean',
                 ]),
-            Number::make('sort_order')
-                ->label(__('velor-site-information::resources.site-information-subjects.fields.order'))
-                ->sortable()
-                ->rules([
-                    'nullable',
-                    'integer',
-                    'min:0',
-                ]),
+            Order::make('sort_order')
+                ->label(__('velor-site-information::resources.site-information-subjects.fields.order')),
         ];
     }
 

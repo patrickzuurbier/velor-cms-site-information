@@ -10,8 +10,6 @@ use Velor\SiteInformation\Resources\SiteInformationResource;
 use Velor\SiteInformation\Resources\SiteInformationSubjectResource;
 
 return [
-    'enabled' => true,
-
     'resources' => [
         'site_information'         => SiteInformationResource::class,
         'site_information_subject' => SiteInformationSubjectResource::class,

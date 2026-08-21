@@ -10,8 +10,6 @@ use Illuminate\Database\ConnectionInterface;
 
 class SiteInformationOrderService
 {
-    protected const TEMPORARY_ORDER_OFFSET = 1000000;
-
     public function __construct(
         protected ConnectionInterface $database,
     ) {
@@ -62,20 +60,13 @@ class SiteInformationOrderService
                 ->orderBy('sort_order')
                 ->get();
 
-            $slots = $items->pluck('sort_order')->all();
             $validIds = $items->pluck('id')->map(static fn (mixed $id): string => (string) $id)->all();
             $orderedIds = array_values(array_intersect($ids, $validIds));
 
             foreach ($orderedIds as $index => $id) {
                 $model::query()
                     ->whereKey($id)
-                    ->update(['sort_order' => self::TEMPORARY_ORDER_OFFSET + $index + 1]);
-            }
-
-            foreach ($orderedIds as $index => $id) {
-                $model::query()
-                    ->whereKey($id)
-                    ->update(['sort_order' => $slots[$index]]);
+                    ->update(['sort_order' => $index + 1]);
             }
         });
     }

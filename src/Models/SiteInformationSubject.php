@@ -4,7 +4,9 @@ declare(strict_types=1);
 
 namespace Velor\SiteInformation\Models;
 
+use App\Concerns\Models\HasRowOrdering;
 use App\Concerns\Models\UsesAudit;
+use App\Contracts\Models\RowOrderableInterface;
 use App\Models\AbstractModel;
 use Illuminate\Database\Eloquent\Concerns\HasUuids;
 use Illuminate\Database\Eloquent\Factories\Factory;
@@ -17,13 +19,21 @@ use Velor\SiteInformation\Database\Factories\SiteInformationSubjectFactory;
 /**
  * @mixin \Eloquent
  */
-class SiteInformationSubject extends AbstractModel
+class SiteInformationSubject extends AbstractModel implements RowOrderableInterface
 {
     /** @use HasFactory<SiteInformationSubjectFactory> */
     use HasFactory;
+    use HasRowOrdering;
     use HasUuids;
     use Sortable;
     use UsesAudit;
+
+    /**
+     * @var array<int, string>
+     */
+    protected array $rowOrderScopeColumns = [
+        'parent_id',
+    ];
 
     /**
      * @var array<int, string>
@@ -69,7 +79,7 @@ class SiteInformationSubject extends AbstractModel
      */
     public function children(): HasMany
     {
-        return $this->hasMany(self::class, 'parent_id')->orderBy('sort_order');
+        return $this->hasMany(self::class, 'parent_id');
     }
 
     /**
@@ -77,7 +87,7 @@ class SiteInformationSubject extends AbstractModel
      */
     public function siteInformation(): HasMany
     {
-        return $this->hasMany(SiteInformation::class)->orderBy('sort_order');
+        return $this->hasMany(SiteInformation::class);
     }
 
     /**

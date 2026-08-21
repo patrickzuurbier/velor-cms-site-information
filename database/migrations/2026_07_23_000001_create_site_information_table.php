@@ -23,9 +23,4 @@ return new class () extends Migration {
             $table->index(['site_information_subject_id', 'sort_order']);
         });
     }
-
-    public function down(): void
-    {
-        Schema::dropIfExists('site_information');
-    }
 };

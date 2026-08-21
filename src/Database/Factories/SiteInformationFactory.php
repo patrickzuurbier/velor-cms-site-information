@@ -22,17 +22,16 @@ class SiteInformationFactory extends Factory
      */
     public function definition(): array
     {
-        $label = fake()->unique()->word() . ' ' . fake()->unique()->word();
+        $label = $this->faker->unique()->word() . ' ' . $this->faker->unique()->word();
         /** @var SiteInformationFieldTypeEnum $type */
-        $type = fake()->randomElement(SiteInformationFieldTypeEnum::cases());
+        $type = $this->faker->randomElement(SiteInformationFieldTypeEnum::cases());
 
         return [
             'site_information_subject_id' => SiteInformationSubject::factory(),
             'label'                       => ucfirst($label),
             'key'                         => Str::slug($label),
             'type'                        => $type->value,
-            'value'                       => fake()->sentence(),
-            'sort_order'                  => fake()->numberBetween(1, 50),
+            'value'                       => $this->faker->sentence(),
         ];
     }
 }

@@ -25,9 +25,4 @@ return new class () extends Migration {
             $table->foreign('parent_id')->references('id')->on('site_information_subjects')->cascadeOnDelete();
         });
     }
-
-    public function down(): void
-    {
-        Schema::dropIfExists('site_information_subjects');
-    }
 };

@@ -11,8 +11,7 @@
     },
     "autoload": {
         "psr-4": {
-            "Velor\\SiteInformation\\": "src/",
-            "Velor\\SiteInformation\\Database\\Seeders\\": "database/seeders/"
+            "Velor\\SiteInformation\\": "src/"
         }
     },
     "autoload-dev": {
