@@ -15,6 +15,13 @@ class SiteInformationRouteTest extends AbstractDatabaseIntegrationTestCase
 {
     use UsesAuthorization;
 
+    protected function setUp(): void
+    {
+        parent::setUp();
+
+        SiteInformationSubject::query()->delete();
+    }
+
     public function test_site_information_values_can_be_viewed_with_collapsed_subject_panels(): void
     {
         $this->actingAsAdmin();
@@ -301,7 +308,7 @@ class SiteInformationRouteTest extends AbstractDatabaseIntegrationTestCase
         $this->get(route('site-information-subjects.create', ['parent_id' => $parent->getKey()]))
             ->assertOk()
             ->assertSee((string) $parent->getKey(), false)
-            ->assertSee('value="5"', false);
+            ->assertSee('value="2"', false);
     }
 
     public function test_root_subject_create_uses_the_next_sort_order_when_it_is_left_empty(): void
@@ -322,7 +329,7 @@ class SiteInformationRouteTest extends AbstractDatabaseIntegrationTestCase
         $subject = SiteInformationSubject::query()->where('key', 'bank')->first();
 
         $this->assertInstanceOf(SiteInformationSubject::class, $subject);
-        $this->assertSame(4, $subject->getAttribute('sort_order'));
+        $this->assertSame(2, $subject->getAttribute('sort_order'));
         $response->assertRedirect(route('site-information.manage'));
     }
 
@@ -344,10 +351,12 @@ class SiteInformationRouteTest extends AbstractDatabaseIntegrationTestCase
             'sort_order'   => null,
         ]);
 
-        $subject = SiteInformationSubject::query()->where('key', 'location_2')->first();
+        $response->assertSessionHasNoErrors();
+
+        $subject = SiteInformationSubject::query()->where('name', 'Location 2')->first();
 
         $this->assertInstanceOf(SiteInformationSubject::class, $subject);
-        $this->assertSame(3, $subject->getAttribute('sort_order'));
+        $this->assertSame(2, $subject->getAttribute('sort_order'));
         $response->assertRedirect(route('site-information-subjects.children.index', [
             'site_information_subject' => $parent->getKey(),
         ]));
@@ -499,7 +508,7 @@ class SiteInformationRouteTest extends AbstractDatabaseIntegrationTestCase
             'site_information_subject' => $subject->getKey(),
         ]))
             ->assertOk()
-            ->assertSee('value="8"', false);
+            ->assertSee('value="2"', false);
     }
 
     public function test_field_create_uses_the_next_sort_order_when_it_is_left_empty(): void
@@ -526,7 +535,7 @@ class SiteInformationRouteTest extends AbstractDatabaseIntegrationTestCase
         $field = SiteInformation::query()->where('key', 'contact.bank_account')->first();
 
         $this->assertInstanceOf(SiteInformation::class, $field);
-        $this->assertSame(4, $field->getAttribute('sort_order'));
+        $this->assertSame(2, $field->getAttribute('sort_order'));
         $response->assertRedirect(route('site-information-subjects.site-information.index', [
             'site_information_subject' => $subject->getKey(),
         ]));

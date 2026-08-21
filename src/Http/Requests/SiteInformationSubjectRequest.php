@@ -112,18 +112,11 @@ class SiteInformationSubjectRequest extends AbstractFormRequest
             return (int) $subject->getAttribute('sort_order');
         }
 
-        $query = SiteInformationSubject::query();
         $parentId = $this->parentId();
 
-        if ($parentId === null) {
-            $query->whereNull('parent_id');
-        } else {
-            $query->where('parent_id', $parentId);
-        }
-
-        $sortOrder = $query->max('sort_order');
-
-        return is_numeric($sortOrder) ? ((int) $sortOrder) + 1 : 1;
+        return (new SiteInformationSubject([
+            'parent_id' => $parentId,
+        ]))->nextRowOrderPosition();
     }
 
     protected function parentId(): ?string

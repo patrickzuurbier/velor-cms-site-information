@@ -147,10 +147,9 @@ class SiteInformationController extends Controller
 
     protected function nextSortOrder(SiteInformationSubject $siteInformationSubject): int
     {
-        $sortOrder = $siteInformationSubject->siteInformation()
-            ->max('sort_order');
-
-        return is_numeric($sortOrder) ? ((int) $sortOrder) + 1 : 1;
+        return (new SiteInformation([
+            'site_information_subject_id' => $siteInformationSubject->getKey(),
+        ]))->nextRowOrderPosition();
     }
 
     protected function subjectTabs(SiteInformationSubject $siteInformationSubject, string $activeTab): TabsData

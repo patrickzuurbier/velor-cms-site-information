@@ -68,16 +68,18 @@ class SiteInformationRequest extends AbstractFormRequest
     {
         if ($this->currentSiteInformation() instanceof SiteInformation) {
             $this->merge([
-                'key'        => $this->currentSiteInformation()->getAttribute('key'),
-                'sort_order' => $this->sortOrder(),
+                'key'                         => $this->currentSiteInformation()->getAttribute('key'),
+                'site_information_subject_id' => $this->subjectId(),
+                'sort_order'                  => $this->sortOrder(),
             ]);
 
             return;
         }
 
         $this->merge([
-            'key'        => $this->generatedKey(),
-            'sort_order' => $this->sortOrder(),
+            'key'                         => $this->generatedKey(),
+            'site_information_subject_id' => $this->subjectId(),
+            'sort_order'                  => $this->sortOrder(),
         ]);
     }
 
@@ -185,8 +187,8 @@ class SiteInformationRequest extends AbstractFormRequest
             return 1;
         }
 
-        $sortOrder = $subject->siteInformation()->max('sort_order');
-
-        return is_numeric($sortOrder) ? ((int) $sortOrder) + 1 : 1;
+        return (new SiteInformation([
+            'site_information_subject_id' => $subject->getKey(),
+        ]))->nextRowOrderPosition();
     }
 }
