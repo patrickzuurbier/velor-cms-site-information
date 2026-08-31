@@ -3,7 +3,7 @@
 Site Information is a first-party Velor CMS resource package for managing
 website-facing company/contact information in configurable subjects and fields.
 
-This package requires Velor CMS `^1.8`.
+This package requires Velor CMS `^1.9`.
 
 ## Installation
 
@@ -22,11 +22,10 @@ php artisan migrate
 
 The migrations create the default Site Information structure.
 
-Optionally publish translations, config, or views:
+Optionally publish translations or views:
 
 ```bash
 php artisan vendor:publish --tag=velor-site-information-lang
-php artisan vendor:publish --tag=velor-site-information-config
 php artisan vendor:publish --tag=velor-site-information-views
 ```
 

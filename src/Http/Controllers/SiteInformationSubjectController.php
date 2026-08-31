@@ -11,8 +11,10 @@ use App\Data\View\TabData;
 use App\Data\View\TabsData;
 use App\Enums\ButtonTypeEnum;
 use App\Http\Controllers\Controller;
+use App\Models\User;
 use Velor\SiteInformation\Http\Requests\SiteInformationSubjectRequest;
 use Velor\SiteInformation\Models\SiteInformationSubject;
+use Velor\SiteInformation\Resources\SiteInformationSubjectResource;
 use App\Services\Resources\Contracts\ResourceIndexQueryInterface;
 use Velor\SiteInformation\Services\SiteInformationSvgStorage;
 use Illuminate\Contracts\Translation\Translator;
@@ -27,6 +29,8 @@ class SiteInformationSubjectController extends Controller
         protected SiteInformationSvgStorage $svgStorage,
         protected Translator $translator,
         protected ShowFactoryInterface $showFactory,
+        protected SiteInformationSubjectResource $siteInformationSubjectResource,
+        protected Request $request,
     ) {
     }
 
@@ -36,10 +40,10 @@ class SiteInformationSubjectController extends Controller
 
         return view('cms.layouts.index', [
             'pagination' => $this->resourceIndexQuery->paginate(
-                model: SiteInformationSubject::class,
+                resource: $this->siteInformationSubjectResource,
                 search: $request->string('search')->toString(),
             ),
-            'model' => new SiteInformationSubject(),
+            'resource' => $this->siteInformationSubjectResource,
         ]);
     }
 
@@ -50,13 +54,14 @@ class SiteInformationSubjectController extends Controller
 
         return view('velor-site-information::cms.layouts.site-information.subject-children-index', [
             'pagination' => $this->resourceIndexQuery->paginate(
-                model: SiteInformationSubject::class,
+                resource: $this->siteInformationSubjectResource,
                 parent: $siteInformationSubject,
                 relationship: 'children',
                 search: $request->string('search')->toString(),
             ),
-            'subject' => $siteInformationSubject,
-            'tabs'    => $this->subjectTabs($siteInformationSubject, 'children'),
+            'resource' => $this->siteInformationSubjectResource,
+            'subject'  => $siteInformationSubject,
+            'tabs'     => $this->subjectTabs($siteInformationSubject, 'children'),
         ]);
     }
 
@@ -64,13 +69,8 @@ class SiteInformationSubjectController extends Controller
     {
         $this->authorize('create', SiteInformationSubject::class);
 
-        $parentId = $this->parentId($request);
-
         return view('cms.layouts.form', [
-            'model' => new SiteInformationSubject([
-                'parent_id'  => $parentId,
-                'sort_order' => $this->nextSortOrder($parentId),
-            ]),
+            'resource' => $this->siteInformationSubjectResource,
         ]);
     }
 
@@ -89,8 +89,8 @@ class SiteInformationSubjectController extends Controller
         $this->authorize('view', $siteInformationSubject);
 
         return view('velor-site-information::cms.layouts.site-information.subject-show', [
-            'model'        => $siteInformationSubject,
-            'show'         => $this->showFactory->make($siteInformationSubject),
+            'resource'     => $this->siteInformationSubjectResource,
+            'show'         => $this->showFactory->make($this->siteInformationSubjectResource, $siteInformationSubject),
             'deleteButton' => $this->deleteButton($siteInformationSubject),
         ]);
     }
@@ -100,7 +100,7 @@ class SiteInformationSubjectController extends Controller
         $this->authorize('update', $siteInformationSubject);
 
         return view('cms.layouts.form', [
-            'model' => $siteInformationSubject,
+            'resource' => $this->siteInformationSubjectResource,
         ]);
     }
 
@@ -159,26 +159,14 @@ class SiteInformationSubjectController extends Controller
         return redirect()->route('site-information.manage');
     }
 
-    protected function parentId(Request $request): ?string
+    protected function deleteButton(SiteInformationSubject $siteInformationSubject): ?ButtonData
     {
-        if (! $request->filled('parent_id')) {
+        $user = $this->request->user();
+
+        if (! $user instanceof User || ! $user->can('delete', $siteInformationSubject)) {
             return null;
         }
 
-        $parentId = $request->string('parent_id')->toString();
-
-        return $parentId !== '' ? $parentId : null;
-    }
-
-    protected function nextSortOrder(?string $parentId): int
-    {
-        return (new SiteInformationSubject([
-            'parent_id' => $parentId,
-        ]))->nextRowOrderPosition();
-    }
-
-    protected function deleteButton(SiteInformationSubject $siteInformationSubject): ButtonData
-    {
         $name = (string) $siteInformationSubject->getAttribute('name');
 
         return new ButtonData(

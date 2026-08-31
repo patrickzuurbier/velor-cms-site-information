@@ -26,9 +26,9 @@
                 <x-cms.layout.button :buttonData="$button" />
             @endforeach
 
-            @can('delete', $model)
+            @if($deleteButton !== null)
                 <x-cms.layout.button :buttonData="$deleteButton" />
-            @endcan
+            @endif
         </div>
     </div>
 

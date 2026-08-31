@@ -10,6 +10,7 @@ use App\Http\Controllers\Controller;
 use Velor\SiteInformation\Http\Requests\SiteInformationRequest;
 use Velor\SiteInformation\Models\SiteInformation;
 use Velor\SiteInformation\Models\SiteInformationSubject;
+use Velor\SiteInformation\Resources\SiteInformationResource;
 use App\Services\Resources\Contracts\ResourceIndexQueryInterface;
 use Velor\SiteInformation\Services\SiteInformationSvgStorage;
 use Illuminate\Contracts\Translation\Translator;
@@ -23,6 +24,7 @@ class SiteInformationController extends Controller
         protected ResourceIndexQueryInterface $resourceIndexQuery,
         protected SiteInformationSvgStorage $svgStorage,
         protected Translator $translator,
+        protected SiteInformationResource $siteInformationResource,
     ) {
     }
 
@@ -33,16 +35,14 @@ class SiteInformationController extends Controller
 
         return view('velor-site-information::cms.layouts.site-information.fields-index', [
             'pagination' => $this->resourceIndexQuery->paginate(
-                model: SiteInformation::class,
+                resource: $this->siteInformationResource,
                 parent: $siteInformationSubject,
                 relationship: 'siteInformation',
                 search: $request->string('search')->toString(),
             ),
-            'model' => new SiteInformation([
-                'site_information_subject_id' => $siteInformationSubject->getKey(),
-            ]),
-            'subject' => $siteInformationSubject,
-            'tabs'    => $this->subjectTabs($siteInformationSubject, 'fields'),
+            'resource' => $this->siteInformationResource,
+            'subject'  => $siteInformationSubject,
+            'tabs'     => $this->subjectTabs($siteInformationSubject, 'fields'),
         ]);
     }
 
@@ -52,10 +52,7 @@ class SiteInformationController extends Controller
         $this->authorize('create', SiteInformation::class);
 
         return view('cms.layouts.form', [
-            'model' => new SiteInformation([
-                'site_information_subject_id' => $siteInformationSubject->getKey(),
-                'sort_order'                  => $this->nextSortOrder($siteInformationSubject),
-            ]),
+            'resource' => $this->siteInformationResource,
         ]);
     }
 
@@ -79,7 +76,7 @@ class SiteInformationController extends Controller
         $this->authorize('view', $siteInformation);
 
         return view('cms.layouts.show', [
-            'model' => $siteInformation,
+            'resource' => $this->siteInformationResource,
         ]);
     }
 
@@ -89,7 +86,7 @@ class SiteInformationController extends Controller
         $this->authorize('update', $siteInformation);
 
         return view('cms.layouts.form', [
-            'model' => $siteInformation,
+            'resource' => $this->siteInformationResource,
         ]);
     }
 
@@ -143,13 +140,6 @@ class SiteInformationController extends Controller
         return redirect()->route('site-information-subjects.site-information.index', [
             'site_information_subject' => $siteInformation->getAttribute('site_information_subject_id'),
         ]);
-    }
-
-    protected function nextSortOrder(SiteInformationSubject $siteInformationSubject): int
-    {
-        return (new SiteInformation([
-            'site_information_subject_id' => $siteInformationSubject->getKey(),
-        ]))->nextRowOrderPosition();
     }
 
     protected function subjectTabs(SiteInformationSubject $siteInformationSubject, string $activeTab): TabsData

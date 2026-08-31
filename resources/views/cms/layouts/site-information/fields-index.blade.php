@@ -63,7 +63,7 @@
 
     <x-cms.layout.tabs :tabs="$tabs" />
 
-    <x-cms.layout.index-table :model="$model" :items="$pagination->items()" />
+    <x-cms.layout.index-table :resource="$resource" :items="$pagination->items()" />
 
     <x-cms.layout.paginator :pagination="$pagination" />
 
