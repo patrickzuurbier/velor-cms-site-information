@@ -6,6 +6,13 @@ This package follows semantic versioning: `MAJOR.MINOR.PATCH`.
 
 ## [Unreleased]
 
+## [1.3.1] - 2026-09-03
+
+### Fixed
+
+- Fixed resource validation requests to pass resource instances to Velor CMS
+  validation factories.
+
 ## [1.3.0] - 2026-08-31
 
 ### Changed
@@ -103,7 +110,8 @@ This package follows semantic versioning: `MAJOR.MINOR.PATCH`.
   requests, resources, policies, translations, CMS menu registration, CMS
   routes, views, scoped ordering, and SVG storage services.
 
-[Unreleased]: https://github.com/patrickzuurbier/velor-cms-site-information/compare/1.3.0...HEAD
+[Unreleased]: https://github.com/patrickzuurbier/velor-cms-site-information/compare/1.3.1...HEAD
+[1.3.1]: https://github.com/patrickzuurbier/velor-cms-site-information/compare/1.3.0...1.3.1
 [1.3.0]: https://github.com/patrickzuurbier/velor-cms-site-information/compare/1.2.1...1.3.0
 [1.2.1]: https://github.com/patrickzuurbier/velor-cms-site-information/compare/1.2.0...1.2.1
 [1.2.0]: https://github.com/patrickzuurbier/velor-cms-site-information/compare/1.1.4...1.2.0
