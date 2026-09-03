@@ -12,12 +12,14 @@ use Illuminate\Support\Str;
 use Illuminate\Validation\Rule;
 use Illuminate\Validation\Validator;
 use Velor\SiteInformation\Models\SiteInformationSubject;
+use Velor\SiteInformation\Resources\SiteInformationSubjectResource;
 
 class SiteInformationSubjectRequest extends AbstractFormRequest
 {
     public function __construct(
         protected ResourceValidationRulesFactoryInterface $rulesFactory,
         protected ResourceValidationAttributesFactoryInterface $attributesFactory,
+        protected SiteInformationSubjectResource $siteInformationSubjectResource,
     ) {
         parent::__construct();
     }
@@ -32,7 +34,7 @@ class SiteInformationSubjectRequest extends AbstractFormRequest
      */
     public function rules(): array
     {
-        $rules = $this->rulesFactory->make(SiteInformationSubject::class);
+        $rules = $this->rulesFactory->make($this->siteInformationSubjectResource);
         $rules['key'] = [
             'required',
             'string',
@@ -53,7 +55,7 @@ class SiteInformationSubjectRequest extends AbstractFormRequest
     {
         if ($this->currentSubject() instanceof SiteInformationSubject) {
             $this->merge([
-                'key'        => $this->currentSubject()->getAttribute('key'),
+                'key' => $this->currentSubject()->getAttribute('key'),
                 'sort_order' => $this->sortOrder(),
             ]);
 
@@ -61,7 +63,7 @@ class SiteInformationSubjectRequest extends AbstractFormRequest
         }
 
         $this->merge([
-            'key'        => Str::snake($this->string('name')->toString()),
+            'key' => Str::snake($this->string('name')->toString()),
             'sort_order' => $this->sortOrder(),
         ]);
     }
@@ -71,7 +73,7 @@ class SiteInformationSubjectRequest extends AbstractFormRequest
      */
     public function attributes(): array
     {
-        return $this->attributesFactory->make(SiteInformationSubject::class);
+        return $this->attributesFactory->make($this->siteInformationSubjectResource);
     }
 
     /**
