@@ -6,6 +6,13 @@ This package follows semantic versioning: `MAJOR.MINOR.PATCH`.
 
 ## [Unreleased]
 
+## [1.3.2] - 2026-09-10
+
+### Changed
+
+- Moved Site Information subject and field persistence and lookup queries into
+  package repositories.
+
 ## [1.3.1] - 2026-09-03
 
 ### Fixed
@@ -110,7 +117,8 @@ This package follows semantic versioning: `MAJOR.MINOR.PATCH`.
   requests, resources, policies, translations, CMS menu registration, CMS
   routes, views, scoped ordering, and SVG storage services.
 
-[Unreleased]: https://github.com/patrickzuurbier/velor-cms-site-information/compare/1.3.1...HEAD
+[Unreleased]: https://github.com/patrickzuurbier/velor-cms-site-information/compare/1.3.2...HEAD
+[1.3.2]: https://github.com/patrickzuurbier/velor-cms-site-information/compare/1.3.1...1.3.2
 [1.3.1]: https://github.com/patrickzuurbier/velor-cms-site-information/compare/1.3.0...1.3.1
 [1.3.0]: https://github.com/patrickzuurbier/velor-cms-site-information/compare/1.2.1...1.3.0
 [1.2.1]: https://github.com/patrickzuurbier/velor-cms-site-information/compare/1.2.0...1.2.1
