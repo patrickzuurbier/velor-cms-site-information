@@ -6,11 +6,11 @@ namespace Velor\SiteInformation\Services;
 
 use App\Data\Form\FormPanelData;
 use App\Data\View\AttributePanelData;
-use Velor\SiteInformation\Models\SiteInformation;
 use Velor\SiteInformation\Factories\SiteInformationAttributeDataFactory;
 use Velor\SiteInformation\Factories\SiteInformationInputDataFactory;
+use Velor\SiteInformation\Models\SiteInformation;
 use Velor\SiteInformation\Models\SiteInformationSubject;
-use Illuminate\Database\Eloquent\Relations\Relation;
+use Velor\SiteInformation\Repositories\Contracts\SiteInformationSubjectRepositoryInterface;
 use Illuminate\Http\Request;
 
 class SiteInformationPanelFactory
@@ -18,6 +18,7 @@ class SiteInformationPanelFactory
     public function __construct(
         protected SiteInformationInputDataFactory $inputDataFactory,
         protected SiteInformationAttributeDataFactory $attributeDataFactory,
+        protected SiteInformationSubjectRepositoryInterface $siteInformationSubjectRepository,
     ) {
     }
 
@@ -88,32 +89,6 @@ class SiteInformationPanelFactory
      */
     protected function rootSubjects(): array
     {
-        return SiteInformationSubject::query()
-            ->whereNull('parent_id')
-            ->with([
-                'siteInformation'          => fn (Relation $query): Relation => $this->ordered($query),
-                'children'                 => fn (Relation $query): Relation => $this->ordered($query, 'name'),
-                'children.siteInformation' => fn (Relation $query): Relation => $this->ordered($query),
-                'children.children'        => fn (Relation $query): Relation => $this->ordered($query, 'name'),
-            ])
-            ->orderBy('sort_order')
-            ->orderBy('name')
-            ->get()
-            ->all();
-    }
-
-    /**
-     * @template TRelatedModel of \Illuminate\Database\Eloquent\Model
-     * @template TDeclaringModel of \Illuminate\Database\Eloquent\Model
-     * @template TResult
-     *
-     * @param Relation<TRelatedModel, TDeclaringModel, TResult> $query
-     * @return Relation<TRelatedModel, TDeclaringModel, TResult>
-     */
-    protected function ordered(Relation $query, string $secondaryColumn = 'label'): Relation
-    {
-        return $query
-            ->orderBy('sort_order')
-            ->orderBy($secondaryColumn);
+        return $this->siteInformationSubjectRepository->rootSubjectsForPanels();
     }
 }

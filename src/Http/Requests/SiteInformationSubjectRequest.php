@@ -12,6 +12,7 @@ use Illuminate\Support\Str;
 use Illuminate\Validation\Rule;
 use Illuminate\Validation\Validator;
 use Velor\SiteInformation\Models\SiteInformationSubject;
+use Velor\SiteInformation\Repositories\Contracts\SiteInformationSubjectRepositoryInterface;
 use Velor\SiteInformation\Resources\SiteInformationSubjectResource;
 
 class SiteInformationSubjectRequest extends AbstractFormRequest
@@ -20,6 +21,7 @@ class SiteInformationSubjectRequest extends AbstractFormRequest
         protected ResourceValidationRulesFactoryInterface $rulesFactory,
         protected ResourceValidationAttributesFactoryInterface $attributesFactory,
         protected SiteInformationSubjectResource $siteInformationSubjectResource,
+        protected SiteInformationSubjectRepositoryInterface $siteInformationSubjectRepository,
     ) {
         parent::__construct();
     }
@@ -55,7 +57,7 @@ class SiteInformationSubjectRequest extends AbstractFormRequest
     {
         if ($this->currentSubject() instanceof SiteInformationSubject) {
             $this->merge([
-                'key' => $this->currentSubject()->getAttribute('key'),
+                'key'        => $this->currentSubject()->getAttribute('key'),
                 'sort_order' => $this->sortOrder(),
             ]);
 
@@ -63,7 +65,7 @@ class SiteInformationSubjectRequest extends AbstractFormRequest
         }
 
         $this->merge([
-            'key' => Str::snake($this->string('name')->toString()),
+            'key'        => Str::snake($this->string('name')->toString()),
             'sort_order' => $this->sortOrder(),
         ]);
     }
@@ -89,7 +91,7 @@ class SiteInformationSubjectRequest extends AbstractFormRequest
         $validator->after(function (Validator $validator): void {
             $subject = $this->currentSubject();
 
-            if ($this->filled('parent_id') && $subject instanceof SiteInformationSubject && $subject->children()->exists()) {
+            if ($this->filled('parent_id') && $subject instanceof SiteInformationSubject && $this->siteInformationSubjectRepository->hasChildren($subject)) {
                 $validator->errors()->add('parent_id', __('velor-site-information::validation.site_information_parent_has_children'));
             }
         });

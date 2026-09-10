@@ -14,11 +14,21 @@ use Velor\SiteInformation\Models\SiteInformation;
 use Velor\SiteInformation\Models\SiteInformationSubject;
 use Velor\SiteInformation\Policies\SiteInformationPolicy;
 use Velor\SiteInformation\Policies\SiteInformationSubjectPolicy;
+use Velor\SiteInformation\Repositories\Contracts\SiteInformationRepositoryInterface;
+use Velor\SiteInformation\Repositories\Contracts\SiteInformationSubjectRepositoryInterface;
+use Velor\SiteInformation\Repositories\SiteInformationRepository;
+use Velor\SiteInformation\Repositories\SiteInformationSubjectRepository;
 use Velor\SiteInformation\Resources\SiteInformationResource;
 use Velor\SiteInformation\Resources\SiteInformationSubjectResource;
 
 class SiteInformationServiceProvider extends ServiceProvider
 {
+    public function register(): void
+    {
+        $this->app->singleton(SiteInformationRepositoryInterface::class, SiteInformationRepository::class);
+        $this->app->singleton(SiteInformationSubjectRepositoryInterface::class, SiteInformationSubjectRepository::class);
+    }
+
     public function boot(
         CmsRouteRegistrarInterface $cmsRoutes,
         ResourceRegistryInterface $resources,

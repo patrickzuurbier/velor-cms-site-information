@@ -10,6 +10,7 @@ use App\Http\Controllers\Controller;
 use Velor\SiteInformation\Http\Requests\SiteInformationRequest;
 use Velor\SiteInformation\Models\SiteInformation;
 use Velor\SiteInformation\Models\SiteInformationSubject;
+use Velor\SiteInformation\Repositories\Contracts\SiteInformationRepositoryInterface;
 use Velor\SiteInformation\Resources\SiteInformationResource;
 use App\Services\Resources\Contracts\ResourceIndexQueryInterface;
 use Velor\SiteInformation\Services\SiteInformationSvgStorage;
@@ -25,6 +26,7 @@ class SiteInformationController extends Controller
         protected SiteInformationSvgStorage $svgStorage,
         protected Translator $translator,
         protected SiteInformationResource $siteInformationResource,
+        protected SiteInformationRepositoryInterface $siteInformationRepository,
     ) {
     }
 
@@ -63,7 +65,7 @@ class SiteInformationController extends Controller
         $this->authorize('view', $siteInformationSubject);
         $this->authorize('create', SiteInformation::class);
 
-        $siteInformation = $siteInformationSubject->siteInformation()->create($request->validated());
+        $siteInformation = $this->siteInformationRepository->createForSubject($siteInformationSubject, $request->validated());
         $this->svgStorage->persist($siteInformation, $this->value($siteInformation));
 
         return $this->redirectAfterSave($siteInformation)
@@ -101,7 +103,7 @@ class SiteInformationController extends Controller
         $wasSvg = $this->svgStorage->isSvg($siteInformation);
         $oldPath = $this->svgStorage->path($siteInformation);
 
-        $siteInformation->update($request->validated());
+        $siteInformation = $this->siteInformationRepository->update($siteInformation, $request->validated());
 
         if ($wasSvg && (! $this->svgStorage->isSvg($siteInformation) || $oldPath !== $this->svgStorage->path($siteInformation))) {
             $this->svgStorage->deletePath($oldPath);
@@ -121,7 +123,7 @@ class SiteInformationController extends Controller
         $this->authorize('delete', $siteInformation);
 
         $this->svgStorage->delete($siteInformation);
-        $siteInformation->delete();
+        $this->siteInformationRepository->delete($siteInformation);
 
         return redirect()
             ->route('site-information.manage')

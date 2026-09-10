@@ -15,7 +15,7 @@ use Illuminate\Contracts\Routing\UrlGenerator;
 use Illuminate\Database\Eloquent\Model;
 use Velor\SiteInformation\Enums\SiteInformationFieldTypeEnum;
 use Velor\SiteInformation\Models\SiteInformation;
-use Velor\SiteInformation\Models\SiteInformationSubject;
+use Velor\SiteInformation\Repositories\Contracts\SiteInformationSubjectRepositoryInterface;
 
 class SiteInformationResource extends AbstractResource
 {
@@ -23,6 +23,7 @@ class SiteInformationResource extends AbstractResource
 
     public function __construct(
         protected UrlGenerator $urlGenerator,
+        protected SiteInformationSubjectRepositoryInterface $siteInformationSubjectRepository,
     ) {
     }
 
@@ -132,10 +133,6 @@ class SiteInformationResource extends AbstractResource
      */
     protected function subjectOptions(): array
     {
-        return SiteInformationSubject::query()
-            ->orderBy('sort_order')
-            ->orderBy('name')
-            ->pluck('id', 'name')
-            ->all();
+        return $this->siteInformationSubjectRepository->subjectOptions();
     }
 }

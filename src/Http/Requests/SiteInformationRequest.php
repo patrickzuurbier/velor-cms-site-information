@@ -14,6 +14,7 @@ use Illuminate\Validation\Rule;
 use Velor\SiteInformation\Enums\SiteInformationFieldTypeEnum;
 use Velor\SiteInformation\Models\SiteInformation;
 use Velor\SiteInformation\Models\SiteInformationSubject;
+use Velor\SiteInformation\Repositories\Contracts\SiteInformationSubjectRepositoryInterface;
 use Velor\SiteInformation\Resources\SiteInformationResource;
 
 class SiteInformationRequest extends AbstractFormRequest
@@ -22,6 +23,7 @@ class SiteInformationRequest extends AbstractFormRequest
         protected ResourceValidationRulesFactoryInterface $rulesFactory,
         protected ResourceValidationAttributesFactoryInterface $attributesFactory,
         protected SiteInformationResource $siteInformationResource,
+        protected SiteInformationSubjectRepositoryInterface $siteInformationSubjectRepository,
     ) {
         parent::__construct();
     }
@@ -70,18 +72,18 @@ class SiteInformationRequest extends AbstractFormRequest
     {
         if ($this->currentSiteInformation() instanceof SiteInformation) {
             $this->merge([
-                'key' => $this->currentSiteInformation()->getAttribute('key'),
+                'key'                         => $this->currentSiteInformation()->getAttribute('key'),
                 'site_information_subject_id' => $this->subjectId(),
-                'sort_order' => $this->sortOrder(),
+                'sort_order'                  => $this->sortOrder(),
             ]);
 
             return;
         }
 
         $this->merge([
-            'key' => $this->generatedKey(),
+            'key'                         => $this->generatedKey(),
             'site_information_subject_id' => $this->subjectId(),
-            'sort_order' => $this->sortOrder(),
+            'sort_order'                  => $this->sortOrder(),
         ]);
     }
 
@@ -92,9 +94,9 @@ class SiteInformationRequest extends AbstractFormRequest
     {
         return match (SiteInformationFieldTypeEnum::tryFrom($this->string('type')->toString())) {
             SiteInformationFieldTypeEnum::EMAIL => ['nullable', 'email', 'max:255'],
-            SiteInformationFieldTypeEnum::SVG => ['nullable', 'string', new SvgMarkup],
-            SiteInformationFieldTypeEnum::URL => ['nullable', 'url', 'max:2048'],
-            default => ['nullable', 'string', 'max:255'],
+            SiteInformationFieldTypeEnum::SVG   => ['nullable', 'string', new SvgMarkup()],
+            SiteInformationFieldTypeEnum::URL   => ['nullable', 'url', 'max:2048'],
+            default                             => ['nullable', 'string', 'max:255'],
         };
     }
 
@@ -166,9 +168,7 @@ class SiteInformationRequest extends AbstractFormRequest
             return null;
         }
 
-        return SiteInformationSubject::query()
-            ->with('parent')
-            ->find($subjectId);
+        return $this->siteInformationSubjectRepository->findWithParent($subjectId);
     }
 
     protected function sortOrder(): int|string

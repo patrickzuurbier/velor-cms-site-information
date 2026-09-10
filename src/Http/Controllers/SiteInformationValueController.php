@@ -8,6 +8,7 @@ use App\Http\Controllers\Controller;
 use Velor\SiteInformation\Http\Requests\SiteInformationValueRequest;
 use Velor\SiteInformation\Models\SiteInformation;
 use Velor\SiteInformation\Models\SiteInformationSubject;
+use Velor\SiteInformation\Repositories\Contracts\SiteInformationRepositoryInterface;
 use Velor\SiteInformation\Services\SiteInformationPanelFactory;
 use Velor\SiteInformation\Services\SiteInformationSvgStorage;
 use Illuminate\Contracts\Translation\Translator;
@@ -21,6 +22,7 @@ class SiteInformationValueController extends Controller
         protected SiteInformationPanelFactory $panelFactory,
         protected SiteInformationSvgStorage $svgStorage,
         protected Translator $translator,
+        protected SiteInformationRepositoryInterface $siteInformationRepository,
     ) {
     }
 
@@ -62,17 +64,17 @@ class SiteInformationValueController extends Controller
         $values = $request->validated('values');
         $values = is_array($values) ? $values : [];
 
-        foreach (SiteInformation::query()->whereIn('id', array_keys($values))->get() as $siteInformation) {
+        $ids = array_map('strval', array_keys($values));
+
+        foreach ($this->siteInformationRepository->forIds($ids) as $siteInformation) {
             $this->authorize('update', $siteInformation);
 
             $value = $values[$siteInformation->getKey()] ?? null;
-            $value = $value === '' ? null : $value;
+            $value = is_string($value) && $value !== '' ? $value : null;
 
             $this->svgStorage->persist($siteInformation, $value);
 
-            $siteInformation->update([
-                'value' => $value,
-            ]);
+            $this->siteInformationRepository->updateValue($siteInformation, $value);
         }
 
         return redirect()

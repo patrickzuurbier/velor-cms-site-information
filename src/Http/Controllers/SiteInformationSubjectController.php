@@ -14,6 +14,7 @@ use App\Http\Controllers\Controller;
 use App\Models\User;
 use Velor\SiteInformation\Http\Requests\SiteInformationSubjectRequest;
 use Velor\SiteInformation\Models\SiteInformationSubject;
+use Velor\SiteInformation\Repositories\Contracts\SiteInformationSubjectRepositoryInterface;
 use Velor\SiteInformation\Resources\SiteInformationSubjectResource;
 use App\Services\Resources\Contracts\ResourceIndexQueryInterface;
 use Velor\SiteInformation\Services\SiteInformationSvgStorage;
@@ -31,6 +32,7 @@ class SiteInformationSubjectController extends Controller
         protected ShowFactoryInterface $showFactory,
         protected SiteInformationSubjectResource $siteInformationSubjectResource,
         protected Request $request,
+        protected SiteInformationSubjectRepositoryInterface $siteInformationSubjectRepository,
     ) {
     }
 
@@ -78,7 +80,7 @@ class SiteInformationSubjectController extends Controller
     {
         $this->authorize('create', SiteInformationSubject::class);
 
-        $siteInformationSubject = SiteInformationSubject::query()->create($request->validated());
+        $siteInformationSubject = $this->siteInformationSubjectRepository->create($request->validated());
 
         return $this->redirectAfterSave($siteInformationSubject)
             ->with('status', $this->translator->get('velor-site-information::cms.subjects.created'));
@@ -110,7 +112,7 @@ class SiteInformationSubjectController extends Controller
     ): RedirectResponse {
         $this->authorize('update', $siteInformationSubject);
 
-        $siteInformationSubject->update($request->validated());
+        $siteInformationSubject = $this->siteInformationSubjectRepository->update($siteInformationSubject, $request->validated());
 
         return $this->redirectAfterSave($siteInformationSubject)
             ->with('status', $this->translator->get('velor-site-information::cms.subjects.updated'));
@@ -121,7 +123,7 @@ class SiteInformationSubjectController extends Controller
         $this->authorize('delete', $siteInformationSubject);
 
         $this->deleteSvgFiles($siteInformationSubject);
-        $siteInformationSubject->delete();
+        $this->siteInformationSubjectRepository->delete($siteInformationSubject);
 
         return redirect()
             ->route('site-information.manage')
@@ -130,10 +132,7 @@ class SiteInformationSubjectController extends Controller
 
     protected function deleteSvgFiles(SiteInformationSubject $siteInformationSubject): void
     {
-        $siteInformationSubject->loadMissing([
-            'siteInformation',
-            'children.siteInformation',
-        ]);
+        $siteInformationSubject = $this->siteInformationSubjectRepository->loadForSvgDeletion($siteInformationSubject);
 
         foreach ($siteInformationSubject->siteInformation as $siteInformation) {
             $this->svgStorage->delete($siteInformation);

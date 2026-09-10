@@ -17,6 +17,7 @@ use App\Resources\Validation\Unique;
 use Illuminate\Contracts\Routing\UrlGenerator;
 use Illuminate\Database\Eloquent\Model;
 use Velor\SiteInformation\Models\SiteInformationSubject;
+use Velor\SiteInformation\Repositories\Contracts\SiteInformationSubjectRepositoryInterface;
 
 class SiteInformationSubjectResource extends AbstractResource
 {
@@ -24,6 +25,7 @@ class SiteInformationSubjectResource extends AbstractResource
 
     public function __construct(
         protected UrlGenerator $urlGenerator,
+        protected SiteInformationSubjectRepositoryInterface $siteInformationSubjectRepository,
     ) {
     }
 
@@ -132,11 +134,6 @@ class SiteInformationSubjectResource extends AbstractResource
      */
     protected function parentOptions(): array
     {
-        return SiteInformationSubject::query()
-            ->whereNull('parent_id')
-            ->orderBy('sort_order')
-            ->orderBy('name')
-            ->pluck('id', 'name')
-            ->all();
+        return $this->siteInformationSubjectRepository->parentOptions();
     }
 }

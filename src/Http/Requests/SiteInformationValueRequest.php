@@ -9,9 +9,16 @@ use App\Rules\SvgMarkup;
 use Illuminate\Contracts\Validation\ValidationRule;
 use Velor\SiteInformation\Enums\SiteInformationFieldTypeEnum;
 use Velor\SiteInformation\Models\SiteInformation;
+use Velor\SiteInformation\Repositories\Contracts\SiteInformationRepositoryInterface;
 
 class SiteInformationValueRequest extends AbstractFormRequest
 {
+    public function __construct(
+        protected SiteInformationRepositoryInterface $siteInformationRepository,
+    ) {
+        parent::__construct();
+    }
+
     public function authorize(): bool
     {
         return true;
@@ -26,7 +33,7 @@ class SiteInformationValueRequest extends AbstractFormRequest
             'values' => ['nullable', 'array'],
         ];
 
-        foreach (SiteInformation::query()->get() as $siteInformation) {
+        foreach ($this->siteInformationRepository->all() as $siteInformation) {
             $rules['values.' . $siteInformation->getKey()] = $this->fieldRules($siteInformation);
         }
 
@@ -40,7 +47,7 @@ class SiteInformationValueRequest extends AbstractFormRequest
     {
         $attributes = [];
 
-        foreach (SiteInformation::query()->get() as $siteInformation) {
+        foreach ($this->siteInformationRepository->all() as $siteInformation) {
             $attributes['values.' . $siteInformation->getKey()] = (string) $siteInformation->getAttribute('label');
         }
 
