@@ -29,6 +29,13 @@ return [
             'type'    => 'Type',
             'value'   => 'Waarde',
         ],
+        'field_types' => [
+            'email'    => 'E-mail',
+            'svg'      => 'SVG',
+            'text'     => 'Tekst',
+            'textarea' => 'Tekstvak',
+            'url'      => 'URL',
+        ],
         'tabs' => [
             'subject' => 'Onderwerp',
         ],

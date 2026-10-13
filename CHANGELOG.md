@@ -6,6 +6,12 @@ This package follows semantic versioning: `MAJOR.MINOR.PATCH`.
 
 ## [Unreleased]
 
+### Changed
+
+- Moved translated field type labels into the field type enum so resource
+  selects use the current CMS locale through the core enum helper.
+- Raised the minimum Velor CMS version to `^1.18` for locale-aware enum labels.
+
 ## [1.3.2] - 2026-09-10
 
 ### Changed

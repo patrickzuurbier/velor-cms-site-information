@@ -24,4 +24,9 @@ enum SiteInformationFieldTypeEnum: string implements HasEnumHelperInterface
     {
         return self::cases();
     }
+
+    public function labelTranslationKey(): string
+    {
+        return 'velor-site-information::resources.site-information.field_types.' . $this->value;
+    }
 }

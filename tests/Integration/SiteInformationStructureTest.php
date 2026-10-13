@@ -12,6 +12,22 @@ use Tests\Integration\AbstractDatabaseIntegrationTestCase;
 
 class SiteInformationStructureTest extends AbstractDatabaseIntegrationTestCase
 {
+    public function test_site_information_field_type_enum_translates_its_visible_values(): void
+    {
+        $this->app->setLocale('nl');
+
+        $this->assertSame(
+            [
+                'E-mail'   => SiteInformationFieldTypeEnum::EMAIL->value,
+                'SVG'      => SiteInformationFieldTypeEnum::SVG->value,
+                'Tekst'    => SiteInformationFieldTypeEnum::TEXT->value,
+                'Tekstvak' => SiteInformationFieldTypeEnum::TEXTAREA->value,
+                'URL'      => SiteInformationFieldTypeEnum::URL->value,
+            ],
+            SiteInformationFieldTypeEnum::selectList(),
+        );
+    }
+
     public function test_it_creates_default_site_information_subjects_and_fields(): void
     {
         $this->assertDatabaseHas('site_information_subjects', [
