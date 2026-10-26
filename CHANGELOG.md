@@ -6,6 +6,8 @@ This package follows semantic versioning: `MAJOR.MINOR.PATCH`.
 
 ## [Unreleased]
 
+## [1.4.1] - 2026-10-26
+
 ### Changed
 
 - Reused the Velor CMS core repository foundation, moved package model
@@ -132,7 +134,8 @@ This package follows semantic versioning: `MAJOR.MINOR.PATCH`.
   requests, resources, policies, translations, CMS menu registration, CMS
   routes, views, scoped ordering, and SVG storage services.
 
-[Unreleased]: https://github.com/patrickzuurbier/velor-cms-site-information/compare/1.4.0...HEAD
+[Unreleased]: https://github.com/patrickzuurbier/velor-cms-site-information/compare/1.4.1...HEAD
+[1.4.1]: https://github.com/patrickzuurbier/velor-cms-site-information/compare/1.4.0...1.4.1
 [1.4.0]: https://github.com/patrickzuurbier/velor-cms-site-information/compare/1.3.2...1.4.0
 [1.3.2]: https://github.com/patrickzuurbier/velor-cms-site-information/compare/1.3.1...1.3.2
 [1.3.1]: https://github.com/patrickzuurbier/velor-cms-site-information/compare/1.3.0...1.3.1
