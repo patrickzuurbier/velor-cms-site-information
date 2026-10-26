@@ -2,12 +2,10 @@
 
 declare(strict_types=1);
 
-namespace Velor\SiteInformation\Services;
+namespace Velor\SiteInformation\Factories;
 
 use App\Data\Form\FormPanelData;
 use App\Data\View\AttributePanelData;
-use Velor\SiteInformation\Factories\SiteInformationAttributeDataFactory;
-use Velor\SiteInformation\Factories\SiteInformationInputDataFactory;
 use Velor\SiteInformation\Models\SiteInformation;
 use Velor\SiteInformation\Models\SiteInformationSubject;
 use Velor\SiteInformation\Repositories\Contracts\SiteInformationSubjectRepositoryInterface;

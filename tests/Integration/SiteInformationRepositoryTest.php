@@ -18,7 +18,7 @@ class SiteInformationRepositoryTest extends AbstractDatabaseIntegrationTestCase
     {
         parent::setUp();
 
-        $this->siteInformationRepository = $this->getApplication()->make(SiteInformationRepositoryInterface::class);
+        $this->siteInformationRepository = $this->app->make(SiteInformationRepositoryInterface::class);
     }
 
     public function test_it_creates_a_field_for_a_subject(): void

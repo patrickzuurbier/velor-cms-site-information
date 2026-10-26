@@ -5,11 +5,11 @@ declare(strict_types=1);
 namespace Velor\SiteInformation\Http\Controllers;
 
 use App\Http\Controllers\Controller;
+use Velor\SiteInformation\Factories\SiteInformationPanelFactory;
 use Velor\SiteInformation\Http\Requests\SiteInformationValueRequest;
 use Velor\SiteInformation\Models\SiteInformation;
 use Velor\SiteInformation\Models\SiteInformationSubject;
 use Velor\SiteInformation\Repositories\Contracts\SiteInformationRepositoryInterface;
-use Velor\SiteInformation\Services\SiteInformationPanelFactory;
 use Velor\SiteInformation\Services\SiteInformationSvgStorage;
 use Illuminate\Contracts\Translation\Translator;
 use Illuminate\Contracts\View\View;

@@ -16,45 +16,45 @@ class SiteInformationSubjectRepositoryTest extends AbstractDatabaseIntegrationTe
     {
         parent::setUp();
 
-        $this->siteInformationSubjectRepository = $this->getApplication()->make(SiteInformationSubjectRepositoryInterface::class);
+        $this->siteInformationSubjectRepository = $this->app->make(SiteInformationSubjectRepositoryInterface::class);
     }
 
     public function test_it_creates_a_subject(): void
     {
         $subject = $this->siteInformationSubjectRepository->create([
             'parent_id'    => null,
-            'name'         => 'Company',
-            'key'          => 'company',
+            'name'         => 'Repository subject',
+            'key'          => 'repository-subject',
             'is_collapsed' => false,
             'sort_order'   => null,
         ]);
 
         $this->assertDatabaseHas('site_information_subjects', [
             'id'   => $subject->getKey(),
-            'name' => 'Company',
-            'key'  => 'company',
+            'name' => 'Repository subject',
+            'key'  => 'repository-subject',
         ]);
     }
 
     public function test_it_returns_parent_options_for_root_subjects(): void
     {
         $parent = SiteInformationSubject::factory()->create([
-            'name'       => 'Company',
-            'key'        => 'company',
+            'name'       => 'Repository parent',
+            'key'        => 'repository-parent',
             'sort_order' => 1,
         ]);
 
         SiteInformationSubject::factory()->create([
             'parent_id'  => $parent->getKey(),
-            'name'       => 'Location',
-            'key'        => 'location',
+            'name'       => 'Repository child',
+            'key'        => 'repository-child',
             'sort_order' => 1,
         ]);
 
         $options = $this->siteInformationSubjectRepository->parentOptions();
 
-        $this->assertSame((string) $parent->getKey(), $options['Company'] ?? null);
-        $this->assertArrayNotHasKey('Location', $options);
+        $this->assertSame((string) $parent->getKey(), $options['Repository parent'] ?? null);
+        $this->assertArrayNotHasKey('Repository child', $options);
     }
 
     public function test_it_reorders_subjects_inside_a_parent_scope(): void

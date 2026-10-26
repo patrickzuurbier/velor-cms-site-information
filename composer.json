@@ -10,7 +10,8 @@
     },
     "autoload": {
         "psr-4": {
-            "Velor\\SiteInformation\\": "src/"
+            "Velor\\SiteInformation\\": "src/",
+            "Velor\\SiteInformation\\Database\\Factories\\": "database/factories/"
         }
     },
     "autoload-dev": {

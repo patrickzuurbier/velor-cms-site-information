@@ -5,9 +5,9 @@ declare(strict_types=1);
 namespace Velor\SiteInformation\Tests\Integration;
 
 use Velor\SiteInformation\Enums\SiteInformationFieldTypeEnum;
+use Velor\SiteInformation\Factories\SiteInformationPanelFactory;
 use Velor\SiteInformation\Models\SiteInformation;
 use Velor\SiteInformation\Models\SiteInformationSubject;
-use Velor\SiteInformation\Services\SiteInformationPanelFactory;
 use Tests\Integration\AbstractDatabaseIntegrationTestCase;
 
 class SiteInformationStructureTest extends AbstractDatabaseIntegrationTestCase
@@ -88,7 +88,7 @@ class SiteInformationStructureTest extends AbstractDatabaseIntegrationTestCase
         ]);
 
         /** @var SiteInformationPanelFactory $panelFactory */
-        $panelFactory = $this->getApplication()->make(SiteInformationPanelFactory::class);
+        $panelFactory = $this->app->make(SiteInformationPanelFactory::class);
         $panel = $panelFactory->showPanels()[0];
 
         $this->assertSame(

@@ -6,6 +6,12 @@ This package follows semantic versioning: `MAJOR.MINOR.PATCH`.
 
 ## [Unreleased]
 
+### Changed
+
+- Reused the Velor CMS core repository foundation, moved package model
+  factories to `database/factories`, and grouped DTO and view-data factories in
+  `src/Factories`.
+
 ## [1.4.0] - 2026-10-13
 
 ### Changed

@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace Velor\SiteInformation\Repositories;
 
+use App\Repositories\AbstractRepository;
 use Illuminate\Database\ConnectionInterface;
 use Illuminate\Database\Eloquent\Relations\Relation;
 use Velor\SiteInformation\Models\SiteInformationSubject;
