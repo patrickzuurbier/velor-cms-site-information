@@ -6,6 +6,14 @@ This package follows semantic versioning: `MAJOR.MINOR.PATCH`.
 
 ## [Unreleased]
 
+### Changed
+
+- Expanded the package documentation with its registration, data model, field
+  types, repository API, default structure, SVG storage lifecycle, and
+  publishable files.
+- Removed host-specific local development setup from the package
+  documentation.
+
 ## [1.4.1] - 2026-10-26
 
 ### Changed
