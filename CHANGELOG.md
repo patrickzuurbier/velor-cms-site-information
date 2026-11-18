@@ -6,6 +6,8 @@ This package follows semantic versioning: `MAJOR.MINOR.PATCH`.
 
 ## [Unreleased]
 
+## [1.5.0] - 2026-11-18
+
 ### Changed
 
 - Adopted Velor CMS' central resource authorization for standard Site
@@ -152,7 +154,8 @@ This package follows semantic versioning: `MAJOR.MINOR.PATCH`.
   requests, resources, policies, translations, CMS menu registration, CMS
   routes, views, scoped ordering, and SVG storage services.
 
-[Unreleased]: https://github.com/patrickzuurbier/velor-cms-site-information/compare/1.4.2...HEAD
+[Unreleased]: https://github.com/patrickzuurbier/velor-cms-site-information/compare/1.5.0...HEAD
+[1.5.0]: https://github.com/patrickzuurbier/velor-cms-site-information/compare/1.4.2...1.5.0
 [1.4.2]: https://github.com/patrickzuurbier/velor-cms-site-information/compare/1.4.1...1.4.2
 [1.4.1]: https://github.com/patrickzuurbier/velor-cms-site-information/compare/1.4.0...1.4.1
 [1.4.0]: https://github.com/patrickzuurbier/velor-cms-site-information/compare/1.3.2...1.4.0
