@@ -10,8 +10,8 @@ use App\Data\View\ModalData;
 use App\Data\View\TabData;
 use App\Data\View\TabsData;
 use App\Enums\ButtonTypeEnum;
-use App\Http\Controllers\Controller;
 use App\Models\User;
+use App\Services\Resources\Http\Controllers\AbstractResourceController;
 use Velor\SiteInformation\Http\Requests\SiteInformationSubjectRequest;
 use Velor\SiteInformation\Models\SiteInformationSubject;
 use Velor\SiteInformation\Repositories\Contracts\SiteInformationSubjectRepositoryInterface;
@@ -23,8 +23,10 @@ use Illuminate\Contracts\View\View;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 
-class SiteInformationSubjectController extends Controller
+class SiteInformationSubjectController extends AbstractResourceController
 {
+    protected static string $resource = SiteInformationSubjectResource::class;
+
     public function __construct(
         protected ResourceIndexQueryInterface $resourceIndexQuery,
         protected SiteInformationSvgStorage $svgStorage,
@@ -38,8 +40,6 @@ class SiteInformationSubjectController extends Controller
 
     public function index(Request $request): View
     {
-        $this->authorize('viewAny', SiteInformationSubject::class);
-
         return view('cms.layouts.index', [
             'pagination' => $this->resourceIndexQuery->paginate(
                 resource: $this->siteInformationSubjectResource,
@@ -69,8 +69,6 @@ class SiteInformationSubjectController extends Controller
 
     public function create(Request $request): View
     {
-        $this->authorize('create', SiteInformationSubject::class);
-
         return view('cms.layouts.form', [
             'resource' => $this->siteInformationSubjectResource,
         ]);
@@ -78,8 +76,6 @@ class SiteInformationSubjectController extends Controller
 
     public function store(SiteInformationSubjectRequest $request): RedirectResponse
     {
-        $this->authorize('create', SiteInformationSubject::class);
-
         $siteInformationSubject = $this->siteInformationSubjectRepository->create($request->validated());
 
         return $this->redirectAfterSave($siteInformationSubject)
@@ -88,8 +84,6 @@ class SiteInformationSubjectController extends Controller
 
     public function show(SiteInformationSubject $siteInformationSubject): View
     {
-        $this->authorize('view', $siteInformationSubject);
-
         return view('velor-site-information::cms.layouts.site-information.subject-show', [
             'resource'     => $this->siteInformationSubjectResource,
             'show'         => $this->showFactory->make($this->siteInformationSubjectResource, $siteInformationSubject),
@@ -99,8 +93,6 @@ class SiteInformationSubjectController extends Controller
 
     public function edit(SiteInformationSubject $siteInformationSubject): View
     {
-        $this->authorize('update', $siteInformationSubject);
-
         return view('cms.layouts.form', [
             'resource' => $this->siteInformationSubjectResource,
         ]);
@@ -110,8 +102,6 @@ class SiteInformationSubjectController extends Controller
         SiteInformationSubjectRequest $request,
         SiteInformationSubject $siteInformationSubject,
     ): RedirectResponse {
-        $this->authorize('update', $siteInformationSubject);
-
         $siteInformationSubject = $this->siteInformationSubjectRepository->update($siteInformationSubject, $request->validated());
 
         return $this->redirectAfterSave($siteInformationSubject)
@@ -120,8 +110,6 @@ class SiteInformationSubjectController extends Controller
 
     public function destroy(SiteInformationSubject $siteInformationSubject): RedirectResponse
     {
-        $this->authorize('delete', $siteInformationSubject);
-
         $this->deleteSvgFiles($siteInformationSubject);
         $this->siteInformationSubjectRepository->delete($siteInformationSubject);
 
