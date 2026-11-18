@@ -6,6 +6,14 @@ This package follows semantic versioning: `MAJOR.MINOR.PATCH`.
 
 ## [Unreleased]
 
+### Changed
+
+- Adopted Velor CMS' central resource authorization for standard Site
+  Information subject and field actions while retaining explicit checks for
+  contextual and package-specific actions.
+- Raised the minimum Velor CMS version to `^1.24` for central resource
+  authorization.
+
 ## [1.4.2] - 2026-11-02
 
 ### Changed

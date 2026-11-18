@@ -21,7 +21,7 @@ settings and from application configuration.
 ## Requirements
 
 - PHP `^8.4.1`
-- Velor CMS `^1.18`
+- Velor CMS `^1.24`
 
 ## Installation
 
@@ -50,6 +50,11 @@ The package service provider registers:
 
 Installing the package always enables these integrations. The package has no
 enable/disable configuration option.
+
+Standard subject and field resource routes use their registered policies
+through Velor CMS' central resource authorization. Parent-subject access,
+value management, reordering, and contextual delete actions retain their
+explicit policy checks.
 
 ## Data Model
 
