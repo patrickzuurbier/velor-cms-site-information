@@ -4,7 +4,7 @@
     <div class="titlebar sticky-top position-sticky">
         <div class="d-flex align-items-center justify-content-between">
             <div class="d-flex align-items-center">
-                <h3>@lang('velor-site-information::cms.manage.title')</h3>
+                <h3>@lang('velor-site-information::velor.manage.title')</h3>
             </div>
 
             <div class="d-flex gap-2">
@@ -13,8 +13,8 @@
                         class="btn btn-primary"
                         href="{{ route('site-information-subjects.create') }}"
                         role="button"
-                        title="{{ __('cms.button_titles.new', ['resource' => __('velor-site-information::resources.site-information-subjects.singular')]) }}"
-                        aria-label="{{ __('cms.button_titles.new', ['resource' => __('velor-site-information::resources.site-information-subjects.singular')]) }}"
+                        title="{{ __('velor.button_titles.new', ['resource' => __('velor-site-information::resources.site-information-subjects.singular')]) }}"
+                        aria-label="{{ __('velor.button_titles.new', ['resource' => __('velor-site-information::resources.site-information-subjects.singular')]) }}"
                     >
                         <i class="bi bi-plus-lg"></i>
                     </a>
@@ -24,8 +24,8 @@
                     class="btn btn-secondary"
                     href="{{ route('site-information.show') }}"
                     role="button"
-                    title="{{ __('cms.button_titles.view', ['resource' => __('velor-site-information::resources.site-information-subjects.plural')]) }}"
-                    aria-label="{{ __('cms.button_titles.view', ['resource' => __('velor-site-information::resources.site-information-subjects.plural')]) }}"
+                    title="{{ __('velor.button_titles.view', ['resource' => __('velor-site-information::resources.site-information-subjects.plural')]) }}"
+                    aria-label="{{ __('velor.button_titles.view', ['resource' => __('velor-site-information::resources.site-information-subjects.plural')]) }}"
                 >
                     <i class="bi bi-arrow-left"></i>
                 </a>
@@ -46,7 +46,7 @@
             </thead>
             <tbody>
                 @foreach ($subjects as $subject)
-                    @include('velor-site-information::cms.layouts.site-information.partials.manage-subject-rows', [
+                    @include('velor-site-information::velor.layouts.site-information.partials.manage-subject-rows', [
                         'subject' => $subject,
                         'depth' => 0,
                     ])
@@ -55,5 +55,5 @@
         </table>
     </div>
 
-    <x-cms.modal.delete />
+    <x-velor.modal.delete />
 @endsection

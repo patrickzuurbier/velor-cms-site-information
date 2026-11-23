@@ -5,10 +5,10 @@ declare(strict_types=1);
 namespace Velor\SiteInformation\Providers;
 
 use App\Services\Authorization\Contracts\PolicyRegistryInterface;
-use App\Services\CmsMenu\Contracts\CmsMenuItemRegistryInterface;
-use App\Services\CmsMenu\Data\CmsMenuItemData;
-use App\Services\CmsRouting\Contracts\CmsRouteRegistrarInterface;
 use App\Services\Resources\Contracts\ResourceRegistryInterface;
+use App\Services\VelorMenu\Contracts\VelorMenuItemRegistryInterface;
+use App\Services\VelorMenu\Data\VelorMenuItemData;
+use App\Services\VelorRouting\Contracts\VelorRouteRegistrarInterface;
 use Illuminate\Support\ServiceProvider;
 use Velor\SiteInformation\Models\SiteInformation;
 use Velor\SiteInformation\Models\SiteInformationSubject;
@@ -30,10 +30,10 @@ class SiteInformationServiceProvider extends ServiceProvider
     }
 
     public function boot(
-        CmsRouteRegistrarInterface $cmsRoutes,
+        VelorRouteRegistrarInterface $velorRoutes,
         ResourceRegistryInterface $resources,
         PolicyRegistryInterface $policies,
-        CmsMenuItemRegistryInterface $cmsMenuItems,
+        VelorMenuItemRegistryInterface $velorMenuItems,
     ): void {
         $this->loadTranslationsFrom(__DIR__ . '/../../lang', 'velor-site-information');
         $this->loadMigrationsFrom(__DIR__ . '/../../database/migrations');
@@ -45,12 +45,12 @@ class SiteInformationServiceProvider extends ServiceProvider
         $policies->register(SiteInformationSubject::class, SiteInformationSubjectPolicy::class);
         $policies->register(SiteInformation::class, SiteInformationPolicy::class);
 
-        $cmsMenuItems->registerBefore(
+        $velorMenuItems->registerBefore(
             'users.index',
-            new CmsMenuItemData(SiteInformationSubject::class, 'site-information.show', 'velor-site-information::resources.site-information-subjects.plural', 'bi-info-circle'),
+            new VelorMenuItemData(SiteInformationSubject::class, 'site-information.show', 'velor-site-information::resources.site-information-subjects.plural', 'bi-info-circle'),
         );
 
-        $cmsRoutes->loadAuthenticated(__DIR__ . '/../../routes/cms.php');
+        $velorRoutes->loadAuthenticated(__DIR__ . '/../../routes/velor.php');
 
         $this->publishes([
             __DIR__ . '/../../database/migrations' => $this->app->databasePath('migrations'),

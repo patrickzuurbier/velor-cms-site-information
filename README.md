@@ -1,6 +1,6 @@
 # Velor CMS Site Information
 
-Site Information is a first-party Velor CMS package for structured,
+Site Information is a first-party Velor content-management package for structured,
 website-facing data such as company details, contact information, locations,
 social links, and reusable SVG assets. It is separate from authenticated user
 settings and from application configuration.
@@ -21,14 +21,14 @@ settings and from application configuration.
 ## Requirements
 
 - PHP `^8.4.1`
-- Velor CMS `^1.24`
+- Velor `^1.26`
 
 ## Installation
 
 Install the package through Composer:
 
 ```bash
-composer require patrickzuurbier/velor-cms-site-information:^1.4
+composer require patrickzuurbier/velor-cms-site-information:^1.6
 ```
 
 Laravel discovers `SiteInformationServiceProvider` automatically. Run the
@@ -44,7 +44,7 @@ The package service provider registers:
 
 - the Site Information subject and field resources;
 - their policies and role privileges;
-- the authenticated CMS routes and sidebar item;
+- the authenticated Velor routes and sidebar item;
 - repository interface bindings;
 - package migrations, translations, and views.
 
@@ -52,7 +52,7 @@ Installing the package always enables these integrations. The package has no
 enable/disable configuration option.
 
 Standard subject and field resource routes use their registered policies
-through Velor CMS' central resource authorization. Parent-subject access,
+through Velor's central resource authorization. Parent-subject access,
 value management, reordering, and contextual delete actions retain their
 explicit policy checks.
 
@@ -71,7 +71,7 @@ Subject ordering is scoped by `parent_id`; field ordering is scoped by
 `site_information_subject_id`.
 
 Deleting a subject cascades to its child subjects and fields. Both models use
-UUID primary keys and participate in Velor CMS auditing and row ordering.
+UUID primary keys and participate in Velor auditing and row ordering.
 
 ## Field Types
 

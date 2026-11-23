@@ -40,7 +40,7 @@ class SiteInformationSubjectController extends AbstractResourceController
 
     public function index(Request $request): View
     {
-        return view('cms.layouts.index', [
+        return view('velor.layouts.index', [
             'pagination' => $this->resourceIndexQuery->paginate(
                 resource: $this->siteInformationSubjectResource,
                 search: $request->string('search')->toString(),
@@ -54,7 +54,7 @@ class SiteInformationSubjectController extends AbstractResourceController
         $this->authorize('view', $siteInformationSubject);
         $this->authorize('viewAny', SiteInformationSubject::class);
 
-        return view('velor-site-information::cms.layouts.site-information.subject-children-index', [
+        return view('velor-site-information::velor.layouts.site-information.subject-children-index', [
             'pagination' => $this->resourceIndexQuery->paginate(
                 resource: $this->siteInformationSubjectResource,
                 parent: $siteInformationSubject,
@@ -69,7 +69,7 @@ class SiteInformationSubjectController extends AbstractResourceController
 
     public function create(Request $request): View
     {
-        return view('cms.layouts.form', [
+        return view('velor.layouts.form', [
             'resource' => $this->siteInformationSubjectResource,
         ]);
     }
@@ -79,12 +79,12 @@ class SiteInformationSubjectController extends AbstractResourceController
         $siteInformationSubject = $this->siteInformationSubjectRepository->create($request->validated());
 
         return $this->redirectAfterSave($siteInformationSubject)
-            ->with('status', $this->translator->get('velor-site-information::cms.subjects.created'));
+            ->with('status', $this->translator->get('velor-site-information::velor.subjects.created'));
     }
 
     public function show(SiteInformationSubject $siteInformationSubject): View
     {
-        return view('velor-site-information::cms.layouts.site-information.subject-show', [
+        return view('velor-site-information::velor.layouts.site-information.subject-show', [
             'resource'     => $this->siteInformationSubjectResource,
             'show'         => $this->showFactory->make($this->siteInformationSubjectResource, $siteInformationSubject),
             'deleteButton' => $this->deleteButton($siteInformationSubject),
@@ -93,7 +93,7 @@ class SiteInformationSubjectController extends AbstractResourceController
 
     public function edit(SiteInformationSubject $siteInformationSubject): View
     {
-        return view('cms.layouts.form', [
+        return view('velor.layouts.form', [
             'resource' => $this->siteInformationSubjectResource,
         ]);
     }
@@ -105,7 +105,7 @@ class SiteInformationSubjectController extends AbstractResourceController
         $siteInformationSubject = $this->siteInformationSubjectRepository->update($siteInformationSubject, $request->validated());
 
         return $this->redirectAfterSave($siteInformationSubject)
-            ->with('status', $this->translator->get('velor-site-information::cms.subjects.updated'));
+            ->with('status', $this->translator->get('velor-site-information::velor.subjects.updated'));
     }
 
     public function destroy(SiteInformationSubject $siteInformationSubject): RedirectResponse
@@ -115,7 +115,7 @@ class SiteInformationSubjectController extends AbstractResourceController
 
         return redirect()
             ->route('site-information.manage')
-            ->with('status', $this->translator->get('velor-site-information::cms.subjects.deleted'));
+            ->with('status', $this->translator->get('velor-site-information::velor.subjects.deleted'));
     }
 
     protected function deleteSvgFiles(SiteInformationSubject $siteInformationSubject): void
@@ -161,13 +161,13 @@ class SiteInformationSubjectController extends AbstractResourceController
             route('site-information-subjects.destroy', ['site_information_subject' => $siteInformationSubject->getKey()]),
             __('velor-site-information::resources.site-information-subjects.singular'),
             $name,
-            __('cms.button_titles.delete', ['resource' => __('velor-site-information::resources.site-information-subjects.singular')]),
+            __('velor.button_titles.delete', ['resource' => __('velor-site-information::resources.site-information-subjects.singular')]),
             new ModalData(
                 'delete',
-                __('cms.delete_modal.title', ['resource' => $name]),
-                __('velor-site-information::cms.manage.delete_subject_warning', ['subject' => $name]),
-                __('cms.actions.close'),
-                __('cms.actions.delete'),
+                __('velor.delete_modal.title', ['resource' => $name]),
+                __('velor-site-information::velor.manage.delete_subject_warning', ['subject' => $name]),
+                __('velor.actions.close'),
+                __('velor.actions.delete'),
             ),
         );
     }

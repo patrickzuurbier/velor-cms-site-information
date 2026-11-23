@@ -31,7 +31,7 @@ class SiteInformationValueController extends Controller
         $this->authorize('viewAny', SiteInformationSubject::class);
         $this->authorize('viewAny', SiteInformation::class);
 
-        return view('velor-site-information::cms.layouts.site-information.show', [
+        return view('velor-site-information::velor.layouts.site-information.show', [
             'panels' => $this->panelFactory->showPanels(),
         ]);
     }
@@ -42,7 +42,7 @@ class SiteInformationValueController extends Controller
         $this->authorize('viewAny', SiteInformation::class);
         $this->authorize('create', SiteInformationSubject::class);
 
-        return view('velor-site-information::cms.layouts.site-information.manage', [
+        return view('velor-site-information::velor.layouts.site-information.manage', [
             'subjects' => $this->panelFactory->subjects(),
         ]);
     }
@@ -52,7 +52,7 @@ class SiteInformationValueController extends Controller
         $this->authorize('viewAny', SiteInformationSubject::class);
         $this->authorize('viewAny', SiteInformation::class);
 
-        return view('velor-site-information::cms.layouts.site-information.form', [
+        return view('velor-site-information::velor.layouts.site-information.form', [
             'panels' => $this->panelFactory->formPanels($request),
         ]);
     }
@@ -79,6 +79,6 @@ class SiteInformationValueController extends Controller
 
         return redirect()
             ->route('site-information.show')
-            ->with('status', $this->translator->get('velor-site-information::cms.updated'));
+            ->with('status', $this->translator->get('velor-site-information::velor.updated'));
     }
 }

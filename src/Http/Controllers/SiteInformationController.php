@@ -36,7 +36,7 @@ class SiteInformationController extends AbstractResourceController
     {
         $this->authorize('view', $siteInformationSubject);
 
-        return view('velor-site-information::cms.layouts.site-information.fields-index', [
+        return view('velor-site-information::velor.layouts.site-information.fields-index', [
             'pagination' => $this->resourceIndexQuery->paginate(
                 resource: $this->siteInformationResource,
                 parent: $siteInformationSubject,
@@ -53,7 +53,7 @@ class SiteInformationController extends AbstractResourceController
     {
         $this->authorize('view', $siteInformationSubject);
 
-        return view('cms.layouts.form', [
+        return view('velor.layouts.form', [
             'resource' => $this->siteInformationResource,
         ]);
     }
@@ -68,14 +68,14 @@ class SiteInformationController extends AbstractResourceController
         $this->svgStorage->persist($siteInformation, $this->value($siteInformation));
 
         return $this->redirectAfterSave($siteInformation)
-            ->with('status', $this->translator->get('velor-site-information::cms.fields.created'));
+            ->with('status', $this->translator->get('velor-site-information::velor.fields.created'));
     }
 
     public function show(SiteInformationSubject $siteInformationSubject, SiteInformation $siteInformation): View
     {
         $this->authorize('view', $siteInformationSubject);
 
-        return view('cms.layouts.show', [
+        return view('velor.layouts.show', [
             'resource' => $this->siteInformationResource,
         ]);
     }
@@ -84,7 +84,7 @@ class SiteInformationController extends AbstractResourceController
     {
         $this->authorize('view', $siteInformationSubject);
 
-        return view('cms.layouts.form', [
+        return view('velor.layouts.form', [
             'resource' => $this->siteInformationResource,
         ]);
     }
@@ -108,7 +108,7 @@ class SiteInformationController extends AbstractResourceController
         $this->svgStorage->persist($siteInformation, $this->value($siteInformation));
 
         return $this->redirectAfterSave($siteInformation)
-            ->with('status', $this->translator->get('velor-site-information::cms.fields.updated'));
+            ->with('status', $this->translator->get('velor-site-information::velor.fields.updated'));
     }
 
     public function destroy(
@@ -122,7 +122,7 @@ class SiteInformationController extends AbstractResourceController
 
         return redirect()
             ->route('site-information.manage')
-            ->with('status', $this->translator->get('velor-site-information::cms.fields.deleted'));
+            ->with('status', $this->translator->get('velor-site-information::velor.fields.deleted'));
     }
 
     protected function value(SiteInformation $siteInformation): ?string

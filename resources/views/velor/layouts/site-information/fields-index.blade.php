@@ -19,7 +19,7 @@
         <div class="d-flex align-items-center justify-content-between">
             <div class="d-flex align-items-center">
                 <h3>
-                    @lang('velor-site-information::cms.fields.title', [
+                    @lang('velor-site-information::velor.fields.title', [
                         'subject' => $subject->getAttribute('name'),
                     ])
                 </h3>
@@ -28,8 +28,8 @@
                     class="btn btn-secondary ms-4"
                     href="{{ route('site-information-subjects.show', ['site_information_subject' => $subject->getKey()]) }}"
                     role="button"
-                    title="{{ __('velor-site-information::cms.subjects.back_to_subject') }}"
-                    aria-label="{{ __('velor-site-information::cms.subjects.back_to_subject') }}"
+                    title="{{ __('velor-site-information::velor.subjects.back_to_subject') }}"
+                    aria-label="{{ __('velor-site-information::velor.subjects.back_to_subject') }}"
                 >
                     <i class="bi bi-arrow-left"></i>
                 </a>
@@ -39,33 +39,33 @@
                         class="btn btn-primary ms-2"
                         href="{{ route('site-information-subjects.site-information.create', ['site_information_subject' => $subject->getKey()]) }}"
                         role="button"
-                        title="{{ __('velor-site-information::cms.fields.add') }}"
-                        aria-label="{{ __('velor-site-information::cms.fields.add') }}"
+                        title="{{ __('velor-site-information::velor.fields.add') }}"
+                        aria-label="{{ __('velor-site-information::velor.fields.add') }}"
                     >
-                        @lang('cms.actions.new')
+                        @lang('velor.actions.new')
                     </a>
                 @endcan
             </div>
 
             <div class="d-flex align-items-center gap-2">
-                <x-cms.layout.language-switcher />
+                <x-velor.layout.language-switcher />
 
                 @if($search !== '')
                     <a href="{{ $showAllUrl }}" class="btn btn-secondary ws-nowrap" role="button">
-                        @lang('cms.actions.show_all')
+                        @lang('velor.actions.show_all')
                     </a>
                 @endif
             </div>
         </div>
 
-        <x-cms.layout.paginator-info :pagination="$pagination" />
+        <x-velor.layout.paginator-info :pagination="$pagination" />
     </div>
 
-    <x-cms.layout.tabs :tabs="$tabs" />
+    <x-velor.layout.tabs :tabs="$tabs" />
 
-    <x-cms.layout.index-table :resource="$resource" :items="$pagination->items()" />
+    <x-velor.layout.index-table :resource="$resource" :items="$pagination->items()" />
 
-    <x-cms.layout.paginator :pagination="$pagination" />
+    <x-velor.layout.paginator :pagination="$pagination" />
 
-    <x-cms.modal.delete />
+    <x-velor.modal.delete />
 @endsection

@@ -16,7 +16,7 @@ $router->get('/site-information/manage', [SiteInformationValueController::class,
 $router->post('/site-information/reorder', SiteInformationOrderController::class)->name('site-information.reorder');
 $router->get('/site-information/edit', [SiteInformationValueController::class, 'edit'])->name('site-information.edit');
 $router->match(['PUT', 'PATCH'], '/site-information', [SiteInformationValueController::class, 'update'])->name('site-information.update');
-$router->redirect('/site-information-subjects', '/cms/site-information/manage')
+$router->redirect('/site-information-subjects', '/velor/site-information/manage')
     ->name('site-information-subjects.index');
 $router->get('/site-information-subjects/{site_information_subject}/children', [SiteInformationSubjectController::class, 'children'])
     ->name('site-information-subjects.children.index');

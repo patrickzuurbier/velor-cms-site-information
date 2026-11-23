@@ -44,7 +44,7 @@
 @endforeach
 
 @foreach ($subject->children as $child)
-    @include('velor-site-information::cms.layouts.site-information.partials.manage-subject-rows', [
+    @include('velor-site-information::velor.layouts.site-information.partials.manage-subject-rows', [
         'subject' => $child,
         'depth' => $depth + 1,
     ])
