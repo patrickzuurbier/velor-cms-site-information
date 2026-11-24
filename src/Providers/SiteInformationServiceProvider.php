@@ -35,9 +35,9 @@ class SiteInformationServiceProvider extends ServiceProvider
         PolicyRegistryInterface $policies,
         VelorMenuItemRegistryInterface $velorMenuItems,
     ): void {
-        $this->loadTranslationsFrom(__DIR__ . '/../../lang', 'velor-site-information');
-        $this->loadMigrationsFrom(__DIR__ . '/../../database/migrations');
-        $this->loadViewsFrom(__DIR__ . '/../../resources/views', 'velor-site-information');
+        $this->loadTranslationsFrom(__DIR__.'/../../lang', 'velor-site-information');
+        $this->loadMigrationsFrom(__DIR__.'/../../database/migrations');
+        $this->loadViewsFrom(__DIR__.'/../../resources/views', 'velor-site-information');
 
         $resources->register($this->app->make(SiteInformationSubjectResource::class));
         $resources->register($this->app->make(SiteInformationResource::class));
@@ -45,23 +45,22 @@ class SiteInformationServiceProvider extends ServiceProvider
         $policies->register(SiteInformationSubject::class, SiteInformationSubjectPolicy::class);
         $policies->register(SiteInformation::class, SiteInformationPolicy::class);
 
-        $velorMenuItems->registerBefore(
-            'users.index',
+        $velorMenuItems->register(
             new VelorMenuItemData(SiteInformationSubject::class, 'site-information.show', 'velor-site-information::resources.site-information-subjects.plural', 'bi-info-circle'),
         );
 
-        $velorRoutes->loadAuthenticated(__DIR__ . '/../../routes/velor.php');
+        $velorRoutes->loadAuthenticated(__DIR__.'/../../routes/velor.php');
 
         $this->publishes([
-            __DIR__ . '/../../database/migrations' => $this->app->databasePath('migrations'),
+            __DIR__.'/../../database/migrations' => $this->app->databasePath('migrations'),
         ], 'velor-site-information-migrations');
 
         $this->publishes([
-            __DIR__ . '/../../lang' => $this->app->langPath('vendor/velor-site-information'),
+            __DIR__.'/../../lang' => $this->app->langPath('vendor/velor-site-information'),
         ], 'velor-site-information-lang');
 
         $this->publishes([
-            __DIR__ . '/../../resources/views' => $this->app->resourcePath('views/vendor/velor-site-information'),
+            __DIR__.'/../../resources/views' => $this->app->resourcePath('views/vendor/velor-site-information'),
         ], 'velor-site-information-views');
     }
 }

@@ -1,4 +1,7 @@
-# Velor CMS Site Information
+<div align="center">
+    <img src="https://velorstack.nl/images/velor-logo.png" alt="Velor" width="88">
+    <h1>Velor Site Information</h1>
+</div>
 
 Site Information is a first-party Velor content-management package for structured,
 website-facing data such as company details, contact information, locations,
@@ -44,7 +47,8 @@ The package service provider registers:
 
 - the Site Information subject and field resources;
 - their policies and role privileges;
-- the authenticated Velor routes and sidebar item;
+- the authenticated Velor routes and sidebar item, which is appended unless
+  `velor-menu.php` assigns it a fixed position;
 - repository interface bindings;
 - package migrations, translations, and views.
 
@@ -167,5 +171,5 @@ changes automatically.
 
 ## License
 
-Velor CMS Site Information is open-sourced software licensed under the MIT
+Velor Site Information is open-sourced software licensed under the MIT
 license.

@@ -6,6 +6,12 @@ This package follows semantic versioning: `MAJOR.MINOR.PATCH`.
 
 ## [Unreleased]
 
+### Changed
+
+- Added consistent Velor branding to the package documentation.
+- Changed Site Information menu registration to append by default so
+  `velor-menu.php` remains responsible for fixed menu placement.
+
 ## [1.6.0] - 2026-11-24
 
 ### Changed
